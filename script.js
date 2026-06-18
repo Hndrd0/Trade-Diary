@@ -5,6 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Clerk SDK Init & Authentication Flow
     const clerkPublishableKey = "pk_test_ZHJpdmVuLWJhc3MtOC5jbGVyay5hY2NvdW50cy5kZXYk";
 
+    // Dynamic path detection for GitHub Pages vs Localhost
+    const isGitHubPages = window.location.hostname.includes('github.io');
+    const basePath = isGitHubPages ? '/Trade-Diary/' : '/';
+    const appRedirectUrl = window.location.origin + basePath + 'app.html';
+
     window.addEventListener('load', async () => {
         if (!window.Clerk) {
             console.error("Clerk SDK failed to load.");
@@ -44,8 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     authContainer.innerHTML = `<button id="${signInBtnId}" class="btn-nav-login" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer;">Sign In</button>`;
                     document.getElementById(signInBtnId).addEventListener('click', () => {
                         window.Clerk.openSignIn({
-                            afterSignInUrl: window.location.origin + '/app.html',
-                            afterSignUpUrl: window.location.origin + '/app.html'
+                            afterSignInUrl: appRedirectUrl,
+                            afterSignUpUrl: appRedirectUrl
                         });
                     });
                 }
@@ -54,8 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     authContainerMobile.innerHTML = `<button id="${signInBtnMobileId}" class="mobile-login" style="width: 100%; text-align: center; border: 1px solid var(--border-color); background: transparent; cursor: pointer; padding: 0.75rem; border-radius: 8px;">Sign In</button>`;
                     document.getElementById(signInBtnMobileId).addEventListener('click', () => {
                         window.Clerk.openSignIn({
-                            afterSignInUrl: window.location.origin + '/app.html',
-                            afterSignUpUrl: window.location.origin + '/app.html'
+                            afterSignInUrl: appRedirectUrl,
+                            afterSignUpUrl: appRedirectUrl
                         });
                     });
                 }
@@ -69,8 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     lucide.createIcons();
                     document.getElementById(heroGetStartedId).addEventListener('click', () => {
                         window.Clerk.openSignUp({
-                            afterSignInUrl: window.location.origin + '/app.html',
-                            afterSignUpUrl: window.location.origin + '/app.html'
+                            afterSignInUrl: appRedirectUrl,
+                            afterSignUpUrl: appRedirectUrl
                         });
                     });
                 }
