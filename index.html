@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Diary | Smart Trading Journal for Traders</title>
+    <meta name="description" content="Trade Diary is your smart trading journal. Log trades, track performance, and gain insights to become a more disciplined, profitable trader." />
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Clerk SDK -->
+    <script 
+        async 
+        crossorigin="anonymous" 
+        data-clerk-publishable-key="pk_test_ZHJpdmVuLWJhc3MtOC5jbGVyay5hY2NvdW50cy5kZXYk" 
+        src="https://driven-bass-8.clerk.accounts.dev/npm/@clerk/clerk-js@5/dist/clerk.browser.js" 
+        type="text/javascript">
+    </script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <header>
+        <nav id="td-nav">
+            <div class="nav-inner">
+                <a class="nav-logo" href="#">
+                    <!-- A simple SVG logo for the placeholder -->
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                    </svg>
+                    <span class="logo-text">Trade Diary</span>
+                </a>
+
+                <ul class="nav-links-list">
+                    <li><a href="#hero">Home</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                    <li><a href="#pricing">Pricing</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+
+                <div class="nav-actions">
+                    <div id="clerk-auth-container"></div>
+                </div>
+
+                <button type="button" id="mobile-menu-button" aria-label="Open menu">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </nav>
+        <div id="mobile-menu" class="hidden">
+            <a href="#hero">Home</a>
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#testimonials">Testimonials</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#faq">FAQ</a>
+            <div id="clerk-auth-container-mobile" style="padding: 1rem 1.5rem;"></div>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO SECTION -->
+        <section id="hero">
+            <div class="mesh-bg"></div>
+            <div class="hero-inner">
+                <div class="hero-text">
+                    <div class="hero-tagline">Trade Smarter, Not Harder</div>
+                    <h1>India's Most Advanced <br><em>Trading Journal</em></h1>
+                    <p class="hero-desc">Track, analyze, and elevate your trading performance with our intelligent platform designed for serious traders. Gain insights, spot patterns, and maximize profits.</p>
+                    <div class="hero-cta">
+                        <div id="hero-cta-clerk"></div>
+                        <a href="#features" class="btn-secondary-outline">Explore Features →</a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <span class="card-title">OVERVIEW</span>
+                            <span class="card-badge">↑ +18.4%</span>
+                        </div>
+                        <div class="chart-area">
+                            <svg viewBox="0 0 400 130" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0 110 L40 90 L80 100 L120 70 L160 85 L200 55 L240 65 L280 40 L320 55 L360 30 L400 40 L400 130 L0 130 Z" fill="rgba(129,140,248,0.12)" />
+                                <path d="M0 110 L40 90 L80 100 L120 70 L160 85 L200 55 L240 65 L280 40 L320 55 L360 30 L400 40" fill="none" stroke="#818cf8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                                <circle cx="400" cy="40" r="5" fill="#34d399" opacity="0.9" />
+                                <circle cx="400" cy="40" r="10" fill="#34d399" opacity="0.2" />
+                            </svg>
+                        </div>
+                        <div class="stat-row">
+                            <div class="stat-box">
+                                <div class="stat-label">Win Rate</div>
+                                <div class="stat-val green">72%</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">P&amp;L Today</div>
+                                <div class="stat-val blue">+₹4.2k</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">Trades</div>
+                                <div class="stat-val amber">142</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATS BAND -->
+        <div class="stats-band">
+            <div class="stats-band-inner">
+                <div class="stat-item">
+                    <div class="stat-num">1.1M+</div>
+                    <div class="stat-desc">Trades logged &amp; analyzed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num green">2.5x</div>
+                    <div class="stat-desc">More disciplined trades</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num rose">−63%</div>
+                    <div class="stat-desc">Reduction in emotional trades</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-num amber">8.5K+</div>
+                    <div class="stat-desc">Active traders on Trade Diary</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FEATURES SECTION -->
+        <section id="features">
+            <div class="section-inner">
+                <div class="section-head">
+                    <div class="section-label">Features</div>
+                    <h2 class="section-heading">Everything You Need to <em>Document &amp; Improve</em> Your Trades</h2>
+                    <p class="section-sub">Powerful tools to track performance, refine strategies, and grow consistently.</p>
+                </div>
+                <div class="features-grid">
+
+                    <div class="feature-card">
+                        <div class="feature-icon icon-blue">
+                            <i data-lucide="bar-chart-2"></i>
+                        </div>
+                        <h3>Advanced Analytics</h3>
+                        <p>Gain powerful trading insights with detailed reports and visualizations.</p>
+                        <ul class="feature-list">
+                            <li>Win rate by strategy, market, and more</li>
+                            <li>Profit factor &amp; expectancy analysis</li>
+                            <li>35+ in-depth performance reports</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon icon-rose">
+                            <i data-lucide="zap-off"></i>
+                        </div>
+                        <h3>Fast Trade Entry</h3>
+                        <p>Log trades effortlessly so you can focus on trading, not data entry.</p>
+                        <ul class="feature-list">
+                            <li>One-click trade entry</li>
+                            <li>Broker API integrations</li>
+                            <li>Bulk trade syncs</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon icon-green">
+                            <i data-lucide="trending-up"></i>
+                        </div>
+                        <h3>Performance Analytics</h3>
+                        <p>Analyze your trades to spot strengths, weaknesses, and improvement areas.</p>
+                        <ul class="feature-list">
+                            <li>Win rate and average R-multiple</li>
+                            <li>Best &amp; worst performing strategies</li>
+                            <li>Equity curve visualization</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon icon-purple">
+                            <i data-lucide="tag"></i>
+                        </div>
+                        <h3>Custom Tagging System</h3>
+                        <p>Organize trades by setup, market condition, or personal notes.</p>
+                        <ul class="feature-list">
+                            <li>By strategy, instrument, or emotion</li>
+                            <li>Filter trades for focused analysis</li>
+                            <li>Tag performance breakdown</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon icon-amber">
+                            <i data-lucide="brain"></i>
+                        </div>
+                        <h3>Psychology Tracking</h3>
+                        <p>Identify patterns in your behavior and market performance.</p>
+                        <ul class="feature-list">
+                            <li>Emotion tagging for trades</li>
+                            <li>Emotional state analysis</li>
+                            <li>Review mindset trends</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon icon-sky">
+                            <i data-lucide="globe"></i>
+                        </div>
+                        <h3>Multi-Market Support</h3>
+                        <p>Trade and track all your markets in one place.</p>
+                        <ul class="feature-list">
+                            <li>Stocks</li>
+                            <li>Forex</li>
+                            <li>Crypto</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon icon-purple">
+                            <i data-lucide="shield"></i>
+                        </div>
+                        <h3>Data Security</h3>
+                        <p>Your trading data stays private and protected at all times.</p>
+                        <ul class="feature-list">
+                            <li>End-to-end encryption</li>
+                            <li>Encrypted backups</li>
+                            <li>Secure cloud hosting</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon icon-blue">
+                            <i data-lucide="smartphone"></i>
+                        </div>
+                        <h3>Access Anywhere</h3>
+                        <p>Log and review trades from any device, anywhere in the world.</p>
+                        <ul class="feature-list">
+                            <li>Fully responsive web app</li>
+                            <li>Mobile-optimized interface</li>
+                            <li>Cloud-based storage</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- HOW IT WORKS -->
+        <section id="how-it-works">
+            <div class="section-inner">
+                <div class="section-head">
+                    <div class="section-label">Process</div>
+                    <h2 class="section-heading">How <em>Trade Diary</em> Works</h2>
+                    <p class="section-sub">Simple steps to transform your trading performance.</p>
+                </div>
+                <div class="steps-row">
+                    <div class="step">
+                        <div class="step-num active">1</div>
+                        <h3>Log Your Trade</h3>
+                        <p>Quickly record all trade details including entry, exit, position size, and notes.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-num active">2</div>
+                        <h3>Tag &amp; Rate</h3>
+                        <p>Categorize trades by strategy, instrument, and rate your execution quality.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-num active">3</div>
+                        <h3>Review &amp; Improve</h3>
+                        <p>Analyze performance metrics to identify strengths and weaknesses in your strategy.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TESTIMONIALS -->
+        <section id="testimonials">
+            <div class="section-inner">
+                <div class="section-head">
+                    <div class="section-label">Testimonials</div>
+                    <h2 class="section-heading">What <em>Traders Say</em></h2>
+                    <p class="section-sub">Hear from early users who transformed their performance.</p>
+                </div>
+                <div class="testimonials-grid">
+
+                    <div class="testi-card featured">
+                        <span class="quote-mark">"</span>
+                        <div class="stars">
+                            <i data-lucide="star" class="star filled"></i>
+                            <i data-lucide="star" class="star filled"></i>
+                            <i data-lucide="star" class="star filled"></i>
+                            <i data-lucide="star" class="star filled"></i>
+                            <i data-lucide="star" class="star filled"></i>
+                        </div>
+                        <p class="testi-text">I separate strategy issues from execution now. Reviewing trades brought massive clarity. I finally know what to fix.</p>
+                        <div class="testi-author">
+                            <div class="testi-avatar-placeholder">A</div>
+                            <div>
+                                <div class="testi-name">Abhay</div>
+                                <div class="testi-role">Equity Trader</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="testi-card">
+                        <span class="quote-mark">"</span>
+                        <div class="stars">
+                            <i data-lucide="star" class="star filled"></i>
+                            <i data-lucide="star" class="star filled"></i>
+                            <i data-lucide="star" class="star filled"></i>
+                            <i data-lucide="star" class="star filled"></i>
+                            <i data-lucide="star" class="star filled"></i>
+                        </div>
+                        <p class="testi-text">I could literally see my emotional mistakes like fear exits or revenge trades. That one insight changed everything for me.</p>
+                        <div class="testi-author">
+                            <div class="testi-avatar-placeholder">R</div>
+                            <div>
+                                <div class="testi-name">Rajvansh</div>
+                                <div class="testi-role">Student</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="testi-card">
+                        <span class="quote-mark">"</span>
+                        <div class="stars">
+                            <i data-lucide="star" class="star filled"></i>
+                            <i data-lucide="star" class="star filled"></i>
+                            <i data-lucide="star" class="star filled"></i>
+                            <i data-lucide="star" class="star filled"></i>
+                            <i data-lucide="star" class="star"></i>
+                        </div>
+                        <p class="testi-text">I only trade twice a week, but journaling keeps me consistent. I learn from every mistake and feel much more in control.</p>
+                        <div class="testi-author">
+                            <div class="testi-avatar-placeholder">AS</div>
+                            <div>
+                                <div class="testi-name">Abhinav Singh</div>
+                                <div class="testi-role">Working Professional</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- COMPARISON -->
+        <section id="comparison">
+            <div class="section-inner">
+                <div class="section-head">
+                    <div class="section-label">Comparison</div>
+                    <h2 class="section-heading">Trade Diary vs. <em>Other Methods</em></h2>
+                    <p class="section-sub">Why professional traders choose Trade Diary over other solutions.</p>
+                </div>
+                <table class="compare-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Trade Diary</th>
+                            <th>On Paper</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="feature-name">Performance Analytics</td>
+                            <td><span class="check"><i data-lucide="check"></i></span></td>
+                            <td>Manual</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Strategy Analysis</td>
+                            <td><span class="check"><i data-lucide="check"></i></span></td>
+                            <td>Limited</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Risk Management Tools</td>
+                            <td><span class="check"><i data-lucide="check"></i></span></td>
+                            <td><span class="cross"><i data-lucide="x"></i></span></td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Broker Integration</td>
+                            <td><span class="check"><i data-lucide="check"></i></span></td>
+                            <td>None</td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Custom Reports</td>
+                            <td><span class="check"><i data-lucide="check"></i></span></td>
+                            <td><span class="cross"><i data-lucide="x"></i></span></td>
+                        </tr>
+                        <tr>
+                            <td class="feature-name">Emotion Tracking</td>
+                            <td><span class="check"><i data-lucide="check"></i></span></td>
+                            <td><span class="cross"><i data-lucide="x"></i></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- PRICING -->
+        <section id="pricing">
+            <div class="section-inner">
+                <div class="section-head">
+                    <div class="section-label">Pricing</div>
+                    <h2 class="section-heading">Simple, <em>Transparent</em> Pricing</h2>
+                    <p class="section-sub">Choose the plan that fits your trading needs.</p>
+                </div>
+                <div class="pricing-grid">
+                    <!-- Monthly -->
+                    <div class="price-card">
+                        <div class="plan-name">Monthly Plan</div>
+                        <div class="plan-desc">Flexibility with month-to-month access</div>
+                        <div class="plan-price">
+                            <span>₹299</span><small>/month</small>
+                        </div>
+                        <div style="height:28px;"></div>
+                        <ul class="plan-features">
+                            <li><i data-lucide="check-circle-2"></i> Unlimited trades</li>
+                            <li><i data-lucide="check-circle-2"></i> Advanced analytics</li>
+                            <li><i data-lucide="check-circle-2"></i> Risk management tools</li>
+                            <li><i data-lucide="check-circle-2"></i> Trade screenshots</li>
+                            <li><i data-lucide="check-circle-2"></i> Standard support</li>
+                        </ul>
+                        <button class="btn-plan btn-plan-outline">Choose Monthly</button>
+                    </div>
+                
+                    <!-- Annual -->
+                    <div id="annual-plan" class="price-card popular">
+                        <div class="popular-badge">Limited Period Offer</div>
+                        <div class="plan-name">Annual Plan</div>
+                        <div class="plan-desc">Best value with significant savings</div>
+                        <div class="plan-price">
+                            <span>₹999</span><small>/year</small>
+                        </div>
+                        <div class="plan-monthly">Just ₹83/month</div>
+                        <div class="plan-savings">
+                            <span class="plan-original">₹3,588/year</span>&nbsp;&nbsp;Save ₹2,589
+                        </div>
+                        <ul class="plan-features">
+                            <li><i data-lucide="check-circle-2"></i> Unlimited trades</li>
+                            <li><i data-lucide="check-circle-2"></i> Advanced analytics</li>
+                            <li><i data-lucide="check-circle-2"></i> Risk management tools</li>
+                            <li><i data-lucide="check-circle-2"></i> Trade screenshots</li>
+                            <li><i data-lucide="check-circle-2"></i> Priority support</li>
+                            <li><i data-lucide="check-circle-2"></i> Beta Tester Access</li>
+                        </ul>
+                        <button class="btn-plan btn-plan-gold">Save 72% Annually</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq">
+            <div class="section-inner">
+                <div class="section-head">
+                    <div class="section-label">FAQ</div>
+                    <h2 class="section-heading">Frequently <em>Asked</em> Questions</h2>
+                    <p class="section-sub">Find answers to common questions about Trade Diary.</p>
+                </div>
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <button class="faq-q">
+                            How does Trade Diary help improve my trading?
+                            <span class="faq-icon"><i data-lucide="plus"></i></span>
+                        </button>
+                        <div class="faq-a">Trade Diary provides data-driven insights into your trading performance. By analyzing your win rate, profit factor, average win/loss, and other metrics across different strategies and market conditions, you can identify what's working and eliminate weaknesses in your approach.</div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-q">
+                            Is my trading data secure?
+                            <span class="faq-icon"><i data-lucide="plus"></i></span>
+                        </button>
+                        <div class="faq-a">Absolutely. We use bank-grade encryption for all data in transit and at rest. Your trading data is never shared with third parties. You can also enable two-factor authentication for additional security.</div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-q">
+                            Are there any additional costs or fees for using Trade Diary?
+                            <span class="faq-icon"><i data-lucide="plus"></i></span>
+                        </button>
+                        <div class="faq-a">The costs are outlined in our subscription plans. There are no hidden fees — what you see is what you pay.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-col">
+                <div class="footer-logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                    </svg>
+                    <span>Trade Diary</span>
+                </div>
+                <p>Empowering traders to reach their full potential through disciplined tracking and performance analytics.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Product</h3>
+                <a href="#features">Features</a>
+                <a href="#pricing">Pricing</a>
+            </div>
+            <div class="footer-col">
+                <h3>Company</h3>
+                <a href="#">About</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-col">
+                <h3>Legal</h3>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Trade Diary. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
