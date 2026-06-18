@@ -863,12 +863,16 @@
         return;
       }
 
+      const isGitHubPages = window.location.hostname.includes('github.io');
+      const basePath = isGitHubPages ? '/Trade-Diary/' : '/';
+      const indexRedirectUrl = window.location.origin + basePath + 'index.html';
+
       try {
         await window.Clerk.load();
 
         if (!window.Clerk.user) {
           // Not authenticated, redirect to index.html (landing page / login)
-          window.location.href = window.location.origin + '/index.html';
+          window.location.href = indexRedirectUrl;
           return;
         }
 
@@ -878,13 +882,13 @@
 
         if (userBtnContainer) {
           window.Clerk.mountUserButton(userBtnContainer, {
-            afterSignOutUrl: window.location.origin + '/index.html'
+            afterSignOutUrl: indexRedirectUrl
           });
         }
 
         if (userBtnContainerMobile) {
           window.Clerk.mountUserButton(userBtnContainerMobile, {
-            afterSignOutUrl: window.location.origin + '/index.html'
+            afterSignOutUrl: indexRedirectUrl
           });
         }
 
