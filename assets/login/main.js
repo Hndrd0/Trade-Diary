@@ -298,13 +298,28 @@ document.getElementById('loginFormElement').addEventListener('submit', (e) => {
         ripple.remove();
     }, 600);
 
-    // Simulate API call
-    setTimeout(() => {
-        createToast('success', 'Login Successful', 'Welcome back! Redirecting to dashboard...');
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
 
-        // Reset form
-        e.target.reset();
-    }, 800);
+    button.disabled = true;
+    const originalText = button.innerHTML;
+    button.innerHTML = 'Logging in...';
+
+    window.login(email, password)
+        .then(() => {
+            createToast('success', 'Login Successful', 'Welcome back! Redirecting to dashboard...');
+            e.target.reset();
+            setTimeout(() => {
+                window.location.href = base_url || 'index.html';
+            }, 1500);
+        })
+        .catch(error => {
+            createToast('error', 'Login Failed', error.message);
+        })
+        .finally(() => {
+            button.disabled = false;
+            button.innerHTML = originalText;
+        });
 });
 
 document.getElementById('registerFormElement').addEventListener('submit', (e) => {
@@ -335,18 +350,28 @@ document.getElementById('registerFormElement').addEventListener('submit', (e) =>
         ripple.remove();
     }, 600);
 
-    // Simulate API call
-    setTimeout(() => {
-        createToast('success', 'Registration Successful', 'Account created successfully! Please check your email for verification.');
+    const email = document.getElementById('registerEmail').value.trim();
+    const password = document.getElementById('registerPassword').value.trim();
 
-        // Reset form
-        e.target.reset();
+    button.disabled = true;
+    const originalText = button.innerHTML;
+    button.innerHTML = 'Signing up...';
 
-        // Switch to login form after a delay
-        setTimeout(() => {
-            showLogin();
-        }, 2000);
-    }, 800);
+    window.signup(email, password)
+        .then(() => {
+            createToast('success', 'Registration Successful', 'Account created successfully!');
+            e.target.reset();
+            setTimeout(() => {
+                showLogin();
+            }, 2000);
+        })
+        .catch(error => {
+            createToast('error', 'Registration failed', error.message);
+        })
+        .finally(() => {
+            button.disabled = false;
+            button.innerHTML = originalText;
+        });
 });
 
 
@@ -409,131 +434,3 @@ document.querySelectorAll('input').forEach(input => {
         }
     });
 });
-
-function signup(postUrl) {
-    var isValid = true;
-    var alertText = "";
-
-    let email = $('#registerEmail').val().trim();
-    let password = $('#registerPassword').val().trim();
-    let confirm_password = $('#registerConfirmPassword').val().trim();
-    let acceptTerms = $('#acceptTerms').is(':checked');
-
-    // Check required fields
-    $('.regReq').each(function () {
-        const val = $(this).val().trim();
-        if (!val) {
-            isValid = false;
-            alertText = $(this).closest('.input-group').find('label').text();
-            return false;
-        }
-    });
-
-    if (!isValid) {
-        createToast('error', 'Validation', `${alertText} is required!`);
-        return false;
-    }
-
-    // Validate email format
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
-        createToast('error', 'Validation', `Please enter a valid email address!`);
-        return false;
-    }
-
-    // Validate strong password
-    // At least 8 characters, one uppercase, one lowercase, one digit, one special character
-    const strongPasswordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?#&])[A-Za-z\d@$!%*?#&]{8,}$/;
-    if (!strongPasswordPattern.test(password)) {
-        createToast('error', 'Validation', `Please enter a strong password!`);
-        return false;
-    }
-
-    // Confirm password match
-    if (password !== confirm_password) {
-        createToast('error', 'Validation', `Passwords do not match!`);
-        return false;
-    }
-
-    // Validate Terms checkbox
-    if (!acceptTerms) {
-        createToast('error', 'Validation', `You must agree to the Terms and Privacy Policy.`);
-        return false;
-    }
-
-    if (!window.firebaseAuth) {
-        createToast('error', 'Error', 'Firebase is not initialized.');
-        return false;
-    }
-
-    // Submit via Firebase Auth
-    window.createUserWithEmailAndPassword(window.firebaseAuth, email, password)
-        .then((userCredential) => {
-            createToast('success', 'Registration Successful', 'Account created successfully!');
-            // Reset form
-            document.querySelector('#registerFormElement').reset();
-            // Switch to login form after a delay
-            setTimeout(() => {
-                showLogin();
-            }, 2000);
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            createToast('error', 'Registration failed', errorMessage);
-        });
-
-    return false; // Prevent default form submission
-}
-
-function signin(postUrl) {
-    let isValid = true;
-    let alertText = "";
-
-    // Check required fields
-    $('.logReq').each(function () {
-        const val = $(this).val().trim();
-        if (!val) {
-            isValid = false;
-            alertText = $(this).closest('.input-group').find('label').text();
-            return false;
-        }
-    });
-
-    if (!isValid) {
-        createToast('error', 'Validation', `${alertText} is required!`);
-        return false;
-    }
-
-    // Validate email format
-    const email = $('#loginEmail').val().trim();
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email)) {
-        createToast('error', 'Validation', `Please enter a valid email address!`);
-        return false;
-    }
-
-    if (!window.firebaseAuth) {
-        createToast('error', 'Error', 'Firebase is not initialized.');
-        return false;
-    }
-
-    // Submit via Firebase Auth
-    window.signInWithEmailAndPassword(window.firebaseAuth, email, $('#loginPassword').val().trim())
-        .then((userCredential) => {
-            createToast('success', 'Login Successful', 'Redirecting to your dashboard...');
-            // Reset form
-            $('#loginFormElement')[0].reset();
-            // Redirect to dashboard
-            setTimeout(() => {
-                window.location.href = base_url;
-            }, 1500);
-        })
-        .catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            createToast('error', 'Login Failed', errorMessage);
-        });
-
-    return false;
-}
