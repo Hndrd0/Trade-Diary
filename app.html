@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Journal App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #080810;
+            --panel-bg: #0e0e1c;
+            --text-color: #f0f0f8;
+            --text-muted: #8888aa;
+            --border-color: rgba(255, 255, 255, 0.06);
+            --accent-color: #00c6ff;
+            --success-color: #00e5a0;
+            --danger-color: #ff5f6d;
+            --warning-color: #fbbf24;
+            --sidebar-width: 250px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-color); display: flex; height: 100vh; overflow: hidden; }
+
+        /* Sidebar */
+        .sidebar { width: var(--sidebar-width); background-color: var(--panel-bg); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; }
+        .sidebar-header { padding: 20px; font-size: 1.2rem; font-weight: 700; border-bottom: 1px solid var(--border-color); color: #fff; }
+        .nav-links { flex: 1; overflow-y: auto; padding: 10px 0; }
+        .nav-link { display: block; padding: 12px 20px; color: var(--text-muted); text-decoration: none; transition: 0.2s; cursor: pointer; }
+        .nav-link:hover, .nav-link.active { background-color: var(--border-color); color: #fff; border-left: 3px solid var(--accent-color); padding-left: 17px; }
+
+        /* Main Content */
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .topbar { height: 60px; background-color: var(--panel-bg); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
+        .topbar-right { display: flex; align-items: center; gap: 15px; }
+        .content-area { flex: 1; overflow-y: auto; padding: 20px; }
+
+        /* UI Components */
+        .card { background-color: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; transition: 0.2s; }
+        .btn-primary { background-color: var(--accent-color); color: #000; }
+        .btn-danger { background-color: var(--danger-color); color: #fff; }
+        .btn-outline { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-color); }
+        .hidden { display: none !important; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .modal { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; position: relative; }
+        .modal-close { position: absolute; top: 15px; right: 20px; cursor: pointer; font-size: 20px; color: var(--text-muted); }
+        .modal-close:hover { color: #fff; }
+        .detail-row { margin-bottom: 10px; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px; }
+        .detail-label { color: var(--text-muted); font-size: 14px; }
+        .detail-value { font-weight: 500; font-size: 14px; text-align: right; }
+
+        /* Sections */
+        .section { display: none; }
+        .section.active { display: block; }
+
+        /* Form elements */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 13px; }
+        .form-control { width: 100%; padding: 10px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); color: #fff; border-radius: 6px; }
+        .form-row { display: flex; gap: 15px; }
+        .form-row .form-group { flex: 1; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">Trading Journal</div>
+        <div class="nav-links">
+            <a class="nav-link active" data-target="dashboard">Dashboard</a>
+            <a class="nav-link" data-target="journal">Trade Journal</a>
+            <a class="nav-link" data-target="reports">Reports</a>
+            <a class="nav-link" data-target="analytics">Strategy Analytics</a>
+            <a class="nav-link" data-target="rules">Rule Tracking</a>
+            <a class="nav-link" data-target="mistakes">Mistake Tracking</a>
+            <a class="nav-link" data-target="psychology">Psychology</a>
+            <a class="nav-link" data-target="calendar">Calendar View</a>
+            <a class="nav-link" data-target="challenges">Challenges</a>
+            <a class="nav-link" data-target="ai-insights">AI Insights</a>
+        </div>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="topbar">
+            <div id="plan-info">Plan: <span id="plan-name">...</span> <span id="trades-usage"></span></div>
+            <div class="topbar-right">
+                <span id="user-email">...</span>
+                <button id="logout-btn" class="btn btn-outline">Logout</button>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div id="dashboard" class="section active">
+                <h2>Dashboard</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <div class="card" style="margin-bottom: 0;"><h4>Total Trades</h4><div id="metric-total" style="font-size: 24px; font-weight: bold; margin-top: 10px;">0</div></div>
+                    <div class="card" style="margin-bottom: 0;"><h4>Win Rate</h4><div id="metric-winrate" style="font-size: 24px; font-weight: bold; margin-top: 10px; color: var(--success-color);">0%</div></div>
+                    <div class="card" style="margin-bottom: 0;"><h4>Net PnL</h4><div id="metric-pnl" style="font-size: 24px; font-weight: bold; margin-top: 10px;">$0.00</div></div>
+                    <div class="card" style="margin-bottom: 0;"><h4>Profit / Loss Trades</h4><div id="metric-pl-count" style="font-size: 20px; font-weight: bold; margin-top: 10px;">0 / 0</div></div>
+                    <div class="card" style="margin-bottom: 0;"><h4>Avg R:R</h4><div id="metric-rr" style="font-size: 24px; font-weight: bold; margin-top: 10px;">0</div></div>
+                    <div class="card" style="margin-bottom: 0;"><h4>Top Strategy</h4><div id="metric-strategy" style="font-size: 20px; font-weight: bold; margin-top: 10px;">-</div></div>
+                </div>
+
+                <div class="card">
+                    <h3>Performance Chart</h3>
+                    <canvas id="performanceChart" height="100"></canvas>
+                </div>
+            </div>
+            <div id="journal" class="section">
+                <h2>Trade Journal</h2>
+
+                <div class="card" id="trade-form-container">
+                    <h3>Add New Trade</h3>
+                    <div id="upgrade-message" style="color:var(--warning-color); display:none; margin-bottom: 10px;">Free limit reached. Please upgrade to Pro to add more trades.</div>
+                    <form id="trade-form">
+                        <div class="form-row">
+                            <div class="form-group"><label>Symbol</label><input type="text" id="t-symbol" class="form-control" required></div>
+                            <div class="form-group"><label>Market</label>
+                                <select id="t-market" class="form-control" required>
+                                    <option value="Stocks">Stocks</option>
+                                    <option value="Forex">Forex</option>
+                                    <option value="Crypto">Crypto</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Trade Date</label><input type="date" id="t-date" class="form-control" required></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Entry Price</label><input type="number" step="any" id="t-entry" class="form-control" required></div>
+                            <div class="form-group"><label>Exit Price</label><input type="number" step="any" id="t-exit" class="form-control" required></div>
+                            <div class="form-group"><label>Quantity</label><input type="number" step="any" id="t-qty" class="form-control" required></div>
+                            <div class="form-group"><label>Stop Loss</label><input type="number" step="any" id="t-sl" class="form-control"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Strategy</label><input type="text" id="t-strategy" class="form-control" required></div>
+                            <div class="form-group"><label>Outcome</label>
+                                <select id="t-outcome" class="form-control" required>
+                                    <option value="Win">Win</option>
+                                    <option value="Loss">Loss</option>
+                                    <option value="Break Even">Break Even</option>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Confidence (1-10)</label><input type="number" min="1" max="10" id="t-confidence" class="form-control" required></div>
+                            <div class="form-group"><label>Emotion (1-10)</label><input type="number" min="1" max="10" id="t-emotion" class="form-control" required></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Rules Followed</label><input type="text" id="t-rules" class="form-control" placeholder="e.g. Trendline bounce"></div>
+                            <div class="form-group"><label>Mistakes Made</label>
+                                <select id="t-mistakes" class="form-control">
+                                    <option value="">None</option>
+                                    <option value="Over Risking">Over Risking</option>
+                                    <option value="Revenge Trading">Revenge Trading</option>
+                                    <option value="FOMO">FOMO</option>
+                                    <option value="Greed">Greed</option>
+                                    <option value="Early Exit">Early Exit</option>
+                                    <option value="Late Entry">Late Entry</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group"><label>Notes</label><textarea id="t-notes" class="form-control" rows="2"></textarea></div>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" class="btn btn-primary" id="btn-save-trade">Save Trade</button>
+                            <button type="button" class="btn btn-outline hidden" id="btn-cancel-edit">Cancel Edit</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>Trade History</h3>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 10px; text-align: left;" id="trades-table">
+                            <thead>
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <th style="padding: 10px;">Date</th>
+                                    <th style="padding: 10px;">Symbol</th>
+                                    <th style="padding: 10px;">Market</th>
+                                    <th style="padding: 10px;">Strategy</th>
+                                    <th style="padding: 10px;">Outcome</th>
+                                    <th style="padding: 10px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trades-tbody">
+                                <!-- Trades will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div id="reports" class="section">
+                <h2>Reports</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;" id="reports-grid">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+            <div id="analytics" class="section">
+                <h2>Strategy Analytics</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;" id="strategy-grid">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+            <div id="rules" class="section">
+                <h2>Rule Tracking</h2>
+                <div class="card">
+                    <p>Rules are tracked directly from your Trade Journal entries.</p>
+                    <div id="rules-grid" style="margin-top: 15px; display: grid; gap: 10px;"></div>
+                </div>
+            </div>
+            <div id="mistakes" class="section">
+                <h2>Mistake Tracking</h2>
+                <div class="card">
+                    <h3>Most Common Mistake: <span id="most-common-mistake" style="color:var(--danger-color)">-</span></h3>
+                    <div id="mistakes-grid" style="margin-top: 15px; display: grid; gap: 10px;"></div>
+                </div>
+            </div>
+            <div id="psychology" class="section">
+                <h2>Psychology Tracking</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;" id="psychology-grid">
+                </div>
+            </div>
+            <div id="calendar" class="section">
+                <h2>Calendar View</h2>
+                <div class="card">
+                    <div id="calendar-header" style="font-size: 18px; font-weight: bold; margin-bottom: 10px; text-align: center;"></div>
+                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center;" id="calendar-grid">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+            <div id="challenges" class="section">
+                <h2>Challenges</h2>
+                <div class="card">
+                    <form id="challenge-form" style="margin-bottom: 20px;">
+                        <div class="form-row">
+                            <div class="form-group"><label>Challenge Name</label><input type="text" id="c-name" class="form-control" required></div>
+                            <div class="form-group"><label>Start Capital</label><input type="number" id="c-start-cap" class="form-control" required></div>
+                            <div class="form-group"><label>Target Capital</label><input type="number" id="c-target-cap" class="form-control" required></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Start Date</label><input type="date" id="c-start-date" class="form-control" required></div>
+                            <div class="form-group"><label>End Date</label><input type="date" id="c-end-date" class="form-control" required></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create Challenge</button>
+                    </form>
+
+                    <div id="challenges-list" style="display: grid; gap: 15px;"></div>
+                </div>
+            </div>
+            <div id="ai-insights" class="section">
+                <h2>AI Insights</h2>
+                <div class="card" id="ai-insights-container">
+                    <h3>Analytics Summary</h3>
+                    <ul style="list-style-position: inside; color: var(--text-muted); line-height: 1.8;">
+                        <li><strong>Strongest Strategy:</strong> <span id="ai-best-strategy">Need more data</span></li>
+                        <li><strong>Weakest Strategy:</strong> <span id="ai-worst-strategy">Need more data</span></li>
+                        <li><strong>Most Common Mistake:</strong> <span id="ai-mistake">Placeholder (Need mistake tracking data)</span></li>
+                        <li><strong>Best Trading Day:</strong> <span id="ai-best-day">Need more data</span></li>
+                        <li><strong>Improvement Suggestions:</strong> <span>Focus on risk management and adhering to your proven strategies.</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="trade-details-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <h3 style="margin-bottom: 20px;">Trade Details</h3>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation Logic
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                e.target.classList.add('active');
+
+                const target = e.target.getAttribute('data-target');
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.getElementById(target).classList.add('active');
+            });
+        });
+    </script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, addDoc, getDocs, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-K9IG5LuHK9oQGyi1jlpiYby989Zywio",
+            authDomain: "greenjournal.firebaseapp.com",
+            projectId: "greenjournal",
+            storageBucket: "greenjournal.firebasestorage.app",
+            messagingSenderId: "256519277997",
+            appId: "1:256519277997:web:e9b4a2336b0fcf18b92524"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let userPlanData = null;
+
+        let tradesData = [];
+        let editingTradeId = null;
+
+        window.closeModal = function() {
+            document.getElementById('trade-details-modal').classList.add('hidden');
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('user-email').textContent = user.email;
+                await initUserSubscription(user);
+                await loadTrades();
+            } else {
+                window.location.href = "Login.html";
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error("Logout error", error);
+            }
+        });
+
+        async function initUserSubscription(user) {
+            const currentMonthKey = new Date().toISOString().slice(0, 7); // YYYY-MM
+            const userRef = doc(db, "users", user.uid);
+            const userSnap = await getDoc(userRef);
+
+            if (userSnap.exists()) {
+                let data = userSnap.data();
+                let updates = {};
+
+                if (data.tradeCountMonthKey !== currentMonthKey) {
+                    updates.tradeCountMonth = 0;
+                    updates.tradeCountMonthKey = currentMonthKey;
+                }
+
+                if (Object.keys(updates).length > 0) {
+                    await updateDoc(userRef, updates);
+                    data = { ...data, ...updates };
+                }
+                userPlanData = data;
+            } else {
+                userPlanData = {
+                    email: user.email,
+                    plan: "free",
+                    tradeCountMonth: 0,
+                    tradeCountMonthKey: currentMonthKey
+                };
+                await setDoc(userRef, userPlanData);
+            }
+
+            updateSubscriptionUI();
+        }
+
+        function updateSubscriptionUI() {
+            if (!userPlanData) return;
+            const planNameEl = document.getElementById('plan-name');
+            const tradesUsageEl = document.getElementById('trades-usage');
+            const upgradeMsg = document.getElementById('upgrade-message');
+            const saveBtn = document.getElementById('btn-save-trade');
+
+            planNameEl.textContent = userPlanData.plan.toUpperCase();
+
+            if (userPlanData.plan === 'free') {
+                const used = userPlanData.tradeCountMonth;
+                const remaining = 10 - used;
+                tradesUsageEl.textContent = `(${used}/10 used, ${remaining} remaining)`;
+
+                if (used >= 10) {
+                    upgradeMsg.style.display = 'block';
+                    saveBtn.disabled = true;
+                } else {
+                    upgradeMsg.style.display = 'none';
+                    saveBtn.disabled = false;
+                }
+            } else {
+                tradesUsageEl.textContent = `(Unlimited)`;
+                upgradeMsg.style.display = 'none';
+                saveBtn.disabled = false;
+            }
+        }
+
+        let performanceChartInstance = null;
+        let challengesData = [];
+
+        window.addEventListener('tradesLoaded', () => {
+            updateDashboardMetrics();
+            loadChallenges();
+        });
+
+        async function loadChallenges() {
+            if (!currentUser) return;
+            challengesData = [];
+            const q = query(collection(db, "users", currentUser.uid, "challenges"), orderBy("endDate", "asc"));
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach((doc) => {
+                challengesData.push({ id: doc.id, ...doc.data() });
+            });
+            renderChallenges();
+        }
+
+        document.getElementById('challenge-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newChall = {
+                name: document.getElementById('c-name').value,
+                startCapital: parseFloat(document.getElementById('c-start-cap').value),
+                targetCapital: parseFloat(document.getElementById('c-target-cap').value),
+                startDate: document.getElementById('c-start-date').value,
+                endDate: document.getElementById('c-end-date').value
+            };
+            await addDoc(collection(db, "users", currentUser.uid, "challenges"), newChall);
+            document.getElementById('challenge-form').reset();
+            await loadChallenges();
+        });
+
+        function renderChallenges() {
+            const list = document.getElementById('challenges-list');
+            list.innerHTML = '';
+
+            challengesData.forEach(c => {
+                const end = new Date(c.endDate);
+                const now = new Date();
+                const daysRemaining = Math.max(0, Math.ceil((end - now) / (1000 * 60 * 60 * 24)));
+
+                // Extremely simple current capital logic: start + netPnl of all trades (Ideally filtered by dates, simplified for MVP)
+                let currentCapital = c.startCapital;
+                tradesData.forEach(t => {
+                    const tDate = new Date(t.tradeDate);
+                    if (tDate >= new Date(c.startDate) && tDate <= new Date(c.endDate)) {
+                        currentCapital += (t.exitPrice - t.entryPrice) * t.quantity;
+                    }
+                });
+
+                const progress = Math.min(100, Math.max(0, ((currentCapital - c.startCapital) / (c.targetCapital - c.startCapital)) * 100));
+
+                list.innerHTML += `
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+                        <h4 style="margin-bottom: 10px;">${c.name}</h4>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted); margin-bottom: 5px;">
+                            <span>Start: $${c.startCapital}</span>
+                            <span>Target: $${c.targetCapital}</span>
+                            <span>Current: $${currentCapital.toFixed(2)}</span>
+                            <span>Days Left: ${daysRemaining}</span>
+                        </div>
+                        <div style="background: var(--panel-bg); height: 10px; border-radius: 5px; overflow: hidden; margin-top: 10px;">
+                            <div style="background: var(--accent-color); height: 100%; width: ${progress}%;"></div>
+                        </div>
+                        <div style="text-align: right; font-size: 12px; margin-top: 5px;">${progress.toFixed(1)}% Complete</div>
+                        <button class="btn btn-outline btn-sm delete-challenge-btn" data-id="${c.id}" style="margin-top: 10px; font-size: 12px;">Delete</button>
+                    </div>
+                `;
+            });
+
+            document.querySelectorAll('.delete-challenge-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    if (confirm('Delete this challenge?')) {
+                        await deleteDoc(doc(db, "users", currentUser.uid, "challenges", id));
+                        await loadChallenges();
+                    }
+                });
+            });
+        }
+
+        async function loadTrades() {
+            if (!currentUser) return;
+            tradesData = [];
+            // Reversing orderBy to asc so chart draws left-to-right correctly if we just sort by date
+            const q = query(collection(db, "users", currentUser.uid, "trades"), orderBy("tradeDate", "asc"));
+            const querySnapshot = await getDocs(q);
+            querySnapshot.forEach((doc) => {
+                tradesData.push({ id: doc.id, ...doc.data() });
+            });
+            // We want table descending, so we reverse a copy for table rendering
+            renderTradesTable([...tradesData].reverse());
+            window.dispatchEvent(new Event('tradesLoaded'));
+        }
+
+        function updateDashboardMetrics() {
+            const total = tradesData.length;
+            let wins = 0;
+            let losses = 0;
+            let netPnl = 0;
+            let strategiesCount = {};
+            let riskRewardTotal = 0;
+            let rrCount = 0;
+
+            const dates = [];
+            const pnlData = [];
+            let cumulativePnl = 0;
+
+            let mistakesCount = {};
+            let rulesFollowedCount = 0;
+            let rulesViolatedCount = 0; // Trades with mistakes are counted as violating rules for simplicity
+
+            let totalConfidence = 0;
+            let totalEmotion = 0;
+            let confWins = { low: 0, high: 0 }, confTotal = { low: 0, high: 0 };
+            let emoWins = { low: 0, high: 0 }, emoTotal = { low: 0, high: 0 };
+
+            const weekdayStats = {0:{p:0, w:0, t:0}, 1:{p:0, w:0, t:0}, 2:{p:0, w:0, t:0}, 3:{p:0, w:0, t:0}, 4:{p:0, w:0, t:0}, 5:{p:0, w:0, t:0}, 6:{p:0, w:0, t:0}};
+            const strategyStats = {};
+
+            tradesData.forEach(t => {
+                if (t.outcome === 'Win') wins++;
+                if (t.outcome === 'Loss') losses++;
+
+                // Simple PnL calculation based on entry, exit and qty (Assuming long for simplicity in this MVP)
+                const pnl = (t.exitPrice - t.entryPrice) * t.quantity;
+                netPnl += pnl;
+
+                cumulativePnl += pnl;
+                dates.push(t.tradeDate);
+                pnlData.push(cumulativePnl);
+
+                if (t.strategy) {
+                    strategiesCount[t.strategy] = (strategiesCount[t.strategy] || 0) + 1;
+                    if (!strategyStats[t.strategy]) strategyStats[t.strategy] = { pnl: 0, wins: 0, total: 0 };
+                    strategyStats[t.strategy].total++;
+                    strategyStats[t.strategy].pnl += pnl;
+                    if (t.outcome === 'Win') strategyStats[t.strategy].wins++;
+                }
+
+                if (t.stopLoss && t.entryPrice) {
+                    const risk = Math.abs(t.entryPrice - t.stopLoss);
+                    const reward = Math.abs(t.exitPrice - t.entryPrice);
+                    if (risk > 0) {
+                        riskRewardTotal += (reward / risk);
+                        rrCount++;
+                    }
+                }
+
+                if (t.mistakes && t.mistakes !== '') {
+                    mistakesCount[t.mistakes] = (mistakesCount[t.mistakes] || 0) + 1;
+                    rulesViolatedCount++;
+                } else if (t.rulesFollowed) {
+                    rulesFollowedCount++;
+                }
+
+                totalConfidence += t.confidence;
+                totalEmotion += t.emotion;
+
+                if (t.confidence > 5) { confTotal.high++; if (t.outcome === 'Win') confWins.high++; }
+                else { confTotal.low++; if (t.outcome === 'Win') confWins.low++; }
+
+                if (t.emotion > 5) { emoTotal.high++; if (t.outcome === 'Win') emoWins.high++; }
+                else { emoTotal.low++; if (t.outcome === 'Win') emoWins.low++; }
+
+                const day = new Date(t.tradeDate).getDay();
+                weekdayStats[day].t++;
+                weekdayStats[day].p += pnl;
+                if (t.outcome === 'Win') weekdayStats[day].w++;
+            });
+
+            const winRate = total > 0 ? ((wins / total) * 100).toFixed(1) : 0;
+            const avgRr = rrCount > 0 ? (riskRewardTotal / rrCount).toFixed(2) : 0;
+
+            let topStrategy = '-';
+            let maxCount = 0;
+            for (const [strategy, count] of Object.entries(strategiesCount)) {
+                if (count > maxCount) {
+                    maxCount = count;
+                    topStrategy = strategy;
+                }
+            }
+
+            let worstStrategy = '-';
+            let bestStrategyPnl = -Infinity;
+            let worstStrategyPnl = Infinity;
+
+            for (const [strategy, stats] of Object.entries(strategyStats)) {
+                if (stats.pnl > bestStrategyPnl) bestStrategyPnl = stats.pnl;
+                if (stats.pnl < worstStrategyPnl) {
+                    worstStrategyPnl = stats.pnl;
+                    worstStrategy = strategy;
+                }
+            }
+
+            let topMistake = '-';
+            let maxMistakeCount = 0;
+            for (const [mistake, count] of Object.entries(mistakesCount)) {
+                if (count > maxMistakeCount) {
+                    maxMistakeCount = count;
+                    topMistake = mistake;
+                }
+            }
+
+            document.getElementById('metric-total').textContent = total;
+            document.getElementById('metric-winrate').textContent = `${winRate}%`;
+            document.getElementById('metric-pnl').textContent = `$${netPnl.toFixed(2)}`;
+            document.getElementById('metric-pl-count').textContent = `${wins} / ${losses}`;
+            document.getElementById('metric-rr').textContent = avgRr;
+            document.getElementById('metric-strategy').textContent = topStrategy;
+
+            // AI Insights updates
+            document.getElementById('ai-best-strategy').textContent = topStrategy !== '-' ? topStrategy : 'Need more data';
+            document.getElementById('ai-worst-strategy').textContent = worstStrategy !== '-' ? worstStrategy : 'Need more data';
+            document.getElementById('ai-mistake').textContent = topMistake !== '-' ? topMistake : 'None';
+
+            // Report Updates
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            let bestDay = '-';
+            let bestDayWin = -1;
+            document.getElementById('reports-grid').innerHTML = Object.keys(weekdayStats).filter(d => weekdayStats[d].t > 0).map(d => {
+                const dayWinRate = ((weekdayStats[d].w / weekdayStats[d].t) * 100).toFixed(1);
+                if (parseFloat(dayWinRate) > bestDayWin) { bestDayWin = parseFloat(dayWinRate); bestDay = dayNames[d]; }
+                return `<div class="card" style="margin-bottom:0"><h4>${dayNames[d]}</h4>
+                    <div>PnL: $${weekdayStats[d].p.toFixed(2)}</div>
+                    <div>Win Rate: ${dayWinRate}%</div></div>`;
+            }).join('');
+            document.getElementById('ai-best-day').textContent = bestDay;
+
+            // Strategy Analytics Updates
+            document.getElementById('strategy-grid').innerHTML = Object.keys(strategyStats).map(s => {
+                return `<div class="card" style="margin-bottom:0"><h4>${s}</h4>
+                    <div>PnL: $${strategyStats[s].pnl.toFixed(2)}</div>
+                    <div>Win Rate: ${((strategyStats[s].wins / strategyStats[s].total) * 100).toFixed(1)}%</div></div>`;
+            }).join('');
+
+            // Mistake Updates
+            document.getElementById('most-common-mistake').textContent = topMistake;
+            document.getElementById('mistakes-grid').innerHTML = Object.keys(mistakesCount).map(m => {
+                return `<div style="display:flex; justify-content:space-between; padding: 10px; background: rgba(255,255,255,0.05); border-radius:4px;">
+                    <span>${m}</span> <span>${mistakesCount[m]} times</span></div>`;
+            }).join('');
+
+            // Rules Updates
+            const ruleRate = total > 0 ? ((rulesFollowedCount / total) * 100).toFixed(1) : 0;
+            const violationRate = total > 0 ? ((rulesViolatedCount / total) * 100).toFixed(1) : 0;
+            document.getElementById('rules-grid').innerHTML = `
+                <div class="card" style="margin-bottom:0"><h4>Rule Follow Rate</h4><div style="font-size:24px; color:var(--success-color)">${ruleRate}%</div></div>
+                <div class="card" style="margin-bottom:0"><h4>Rule Violation Rate</h4><div style="font-size:24px; color:var(--danger-color)">${violationRate}%</div></div>
+            `;
+
+            // Psychology Updates
+            const avgConf = total > 0 ? (totalConfidence / total).toFixed(1) : 0;
+            const avgEmo = total > 0 ? (totalEmotion / total).toFixed(1) : 0;
+            const highConfWin = confTotal.high > 0 ? ((confWins.high / confTotal.high)*100).toFixed(1) : 0;
+            const highEmoWin = emoTotal.high > 0 ? ((emoWins.high / emoTotal.high)*100).toFixed(1) : 0;
+            document.getElementById('psychology-grid').innerHTML = `
+                <div class="card" style="margin-bottom:0"><h4>Avg Confidence</h4><div style="font-size:24px">${avgConf}/10</div></div>
+                <div class="card" style="margin-bottom:0"><h4>Avg Emotion</h4><div style="font-size:24px">${avgEmo}/10</div></div>
+                <div class="card" style="margin-bottom:0"><h4>Win Rate (High Conf)</h4><div style="font-size:24px">${highConfWin}%</div></div>
+                <div class="card" style="margin-bottom:0"><h4>Win Rate (High Emo)</h4><div style="font-size:24px">${highEmoWin}%</div></div>
+            `;
+
+            renderChart(dates, pnlData);
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const calGrid = document.getElementById('calendar-grid');
+            calGrid.innerHTML = `<div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>`;
+
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            document.getElementById('calendar-header').textContent = new Date(year, month).toLocaleString('default', { month: 'long', year: 'numeric' });
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            // Daily PnL aggregate
+            const dailyPnL = {};
+            tradesData.forEach(t => {
+                const td = new Date(t.tradeDate);
+                // Adjust for local time simple matching
+                if (td.getUTCFullYear() === year && td.getUTCMonth() === month) {
+                    dailyPnL[td.getUTCDate()] = (dailyPnL[td.getUTCDate()] || 0) + ((t.exitPrice - t.entryPrice) * t.quantity);
+                }
+            });
+
+            for (let i = 0; i < firstDay; i++) {
+                calGrid.innerHTML += `<div style="padding: 15px; border: 1px solid rgba(255,255,255,0.05); opacity: 0.3;"></div>`;
+            }
+            for (let i = 1; i <= daysInMonth; i++) {
+                const pnl = dailyPnL[i] || 0;
+                let bg = 'rgba(255,255,255,0.05)';
+                if (dailyPnL[i] !== undefined) {
+                    bg = pnl >= 0 ? 'rgba(0,229,160,0.2)' : 'rgba(255,95,109,0.2)';
+                }
+                calGrid.innerHTML += `<div style="padding: 15px; border: 1px solid rgba(255,255,255,0.05); background: ${bg}; border-radius: 4px;">
+                    <div>${i}</div>
+                    <div style="font-size: 10px; margin-top: 5px;">${dailyPnL[i] !== undefined ? '$'+pnl.toFixed(2) : ''}</div>
+                </div>`;
+            }
+        }
+
+        function renderChart(labels, data) {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+
+            if (performanceChartInstance) {
+                performanceChartInstance.destroy();
+            }
+
+            performanceChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Cumulative PnL',
+                        data: data,
+                        borderColor: '#00c6ff',
+                        backgroundColor: 'rgba(0, 198, 255, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#8888aa' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#8888aa' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function renderTradesTable(sortedData) {
+            const tbody = document.getElementById('trades-tbody');
+            tbody.innerHTML = '';
+            sortedData.forEach(trade => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid var(--border-color)';
+
+                let outcomeColor = '#fff';
+                if (trade.outcome === 'Win') outcomeColor = 'var(--success-color)';
+                else if (trade.outcome === 'Loss') outcomeColor = 'var(--danger-color)';
+
+                tr.innerHTML = `
+                    <td style="padding: 10px;">${trade.tradeDate}</td>
+                    <td style="padding: 10px;">${trade.symbol}</td>
+                    <td style="padding: 10px;">${trade.market}</td>
+                    <td style="padding: 10px;">${trade.strategy}</td>
+                    <td style="padding: 10px; color: ${outcomeColor};">${trade.outcome}</td>
+                    <td style="padding: 10px; display: flex; gap: 5px;">
+                        <button class="btn btn-outline btn-sm view-trade-btn" data-id="${trade.id}" style="padding: 4px 8px; font-size: 12px;">View</button>
+                        <button class="btn btn-outline btn-sm edit-trade-btn" data-id="${trade.id}" style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                        <button class="btn btn-outline btn-sm delete-trade-btn" data-id="${trade.id}" style="padding: 4px 8px; font-size: 12px; color: var(--danger-color); border-color: rgba(255,95,109,0.3);">Del</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.querySelectorAll('.view-trade-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    const trade = tradesData.find(t => t.id === id);
+                    if (trade) {
+                        const content = document.getElementById('modal-content');
+                        content.innerHTML = `
+                            <div class="detail-row"><span class="detail-label">Symbol</span><span class="detail-value">${trade.symbol}</span></div>
+                            <div class="detail-row"><span class="detail-label">Market</span><span class="detail-value">${trade.market}</span></div>
+                            <div class="detail-row"><span class="detail-label">Date</span><span class="detail-value">${trade.tradeDate}</span></div>
+                            <div class="detail-row"><span class="detail-label">Entry Price</span><span class="detail-value">${trade.entryPrice}</span></div>
+                            <div class="detail-row"><span class="detail-label">Exit Price</span><span class="detail-value">${trade.exitPrice}</span></div>
+                            <div class="detail-row"><span class="detail-label">Quantity</span><span class="detail-value">${trade.quantity}</span></div>
+                            <div class="detail-row"><span class="detail-label">Stop Loss</span><span class="detail-value">${trade.stopLoss || '-'}</span></div>
+                            <div class="detail-row"><span class="detail-label">Strategy</span><span class="detail-value">${trade.strategy}</span></div>
+                            <div class="detail-row"><span class="detail-label">Outcome</span><span class="detail-value">${trade.outcome}</span></div>
+                            <div class="detail-row"><span class="detail-label">Rules Followed</span><span class="detail-value">${trade.rulesFollowed || '-'}</span></div>
+                            <div class="detail-row"><span class="detail-label">Mistakes Made</span><span class="detail-value">${trade.mistakes || 'None'}</span></div>
+                            <div class="detail-row"><span class="detail-label">Confidence</span><span class="detail-value">${trade.confidence}/10</span></div>
+                            <div class="detail-row"><span class="detail-label">Emotion</span><span class="detail-value">${trade.emotion}/10</span></div>
+                            <div style="margin-top: 15px;">
+                                <span class="detail-label">Notes:</span>
+                                <p style="font-size: 14px; margin-top: 5px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 4px;">${trade.notes || 'No notes'}</p>
+                            </div>
+                        `;
+                        document.getElementById('trade-details-modal').classList.remove('hidden');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.edit-trade-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    const trade = tradesData.find(t => t.id === id);
+                    if (trade) {
+                        editingTradeId = id;
+                        document.getElementById('t-symbol').value = trade.symbol;
+                        document.getElementById('t-market').value = trade.market;
+                        document.getElementById('t-entry').value = trade.entryPrice;
+                        document.getElementById('t-exit').value = trade.exitPrice;
+                        document.getElementById('t-qty').value = trade.quantity;
+                        document.getElementById('t-sl').value = trade.stopLoss || '';
+                        document.getElementById('t-strategy').value = trade.strategy;
+                        document.getElementById('t-outcome').value = trade.outcome;
+                        document.getElementById('t-notes').value = trade.notes || '';
+                        document.getElementById('t-rules').value = trade.rulesFollowed || '';
+                        document.getElementById('t-mistakes').value = trade.mistakes || '';
+                        document.getElementById('t-confidence').value = trade.confidence;
+                        document.getElementById('t-emotion').value = trade.emotion;
+                        document.getElementById('t-date').value = trade.tradeDate;
+
+                        document.getElementById('btn-save-trade').textContent = 'Update Trade';
+                        document.getElementById('btn-cancel-edit').classList.remove('hidden');
+
+                        // Switch to journal tab and scroll up
+                        document.querySelector('.nav-link[data-target="journal"]').click();
+                        document.getElementById('trade-form-container').scrollIntoView({behavior: 'smooth'});
+                    }
+                });
+            });
+
+            document.querySelectorAll('.delete-trade-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.target.getAttribute('data-id');
+                    if (confirm('Are you sure you want to delete this trade?')) {
+                        await deleteDoc(doc(db, "users", currentUser.uid, "trades", id));
+                        // Decrement count if free and matching current month (optional logic, skipping for now, count reflects created trades)
+                        await loadTrades();
+                    }
+                });
+            });
+        }
+
+        document.getElementById('btn-cancel-edit').addEventListener('click', () => {
+            editingTradeId = null;
+            document.getElementById('trade-form').reset();
+            document.getElementById('btn-save-trade').textContent = 'Save Trade';
+            document.getElementById('btn-cancel-edit').classList.add('hidden');
+        });
+
+        document.getElementById('trade-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            // Check limits again before saving ONLY IF NOT EDITING
+            if (!editingTradeId && userPlanData.plan === 'free' && userPlanData.tradeCountMonth >= 10) {
+                alert("Free limit reached. Please upgrade to Pro.");
+                return;
+            }
+
+            const tradeDataToSave = {
+                symbol: document.getElementById('t-symbol').value,
+                market: document.getElementById('t-market').value,
+                entryPrice: parseFloat(document.getElementById('t-entry').value),
+                exitPrice: parseFloat(document.getElementById('t-exit').value),
+                quantity: parseFloat(document.getElementById('t-qty').value),
+                stopLoss: parseFloat(document.getElementById('t-sl').value) || null,
+                strategy: document.getElementById('t-strategy').value,
+                outcome: document.getElementById('t-outcome').value,
+                notes: document.getElementById('t-notes').value,
+                rulesFollowed: document.getElementById('t-rules').value,
+                mistakes: document.getElementById('t-mistakes').value,
+                confidence: parseInt(document.getElementById('t-confidence').value),
+                emotion: parseInt(document.getElementById('t-emotion').value),
+                tradeDate: document.getElementById('t-date').value,
+            };
+
+            try {
+                if (editingTradeId) {
+                    // Update existing
+                    await updateDoc(doc(db, "users", currentUser.uid, "trades", editingTradeId), tradeDataToSave);
+                } else {
+                    // Create new
+                    tradeDataToSave.createdAt = new Date().toISOString();
+                    await addDoc(collection(db, "users", currentUser.uid, "trades"), tradeDataToSave);
+
+                    if (userPlanData.plan === 'free') {
+                        userPlanData.tradeCountMonth += 1;
+                        const userRef = doc(db, "users", currentUser.uid);
+                        await updateDoc(userRef, { tradeCountMonth: userPlanData.tradeCountMonth });
+                        updateSubscriptionUI();
+                    }
+                }
+
+                editingTradeId = null;
+                document.getElementById('trade-form').reset();
+                document.getElementById('btn-save-trade').textContent = 'Save Trade';
+                document.getElementById('btn-cancel-edit').classList.add('hidden');
+
+                await loadTrades();
+            } catch (error) {
+                console.error("Error saving trade: ", error);
+                alert("Failed to save trade.");
+            }
+        });
+    </script>
+</body>
+</html>
