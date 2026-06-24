@@ -144,7 +144,11 @@
                             <div class="form-group"><label>Emotion (1-10)</label><input type="number" min="1" max="10" id="t-emotion" class="form-control" required></div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group"><label>Rules Followed</label><input type="text" id="t-rules" class="form-control" placeholder="e.g. Trendline bounce"></div>
+                            <div class="form-group"><label>Rules Followed</label>
+                                <select id="t-rules" class="form-control">
+                                    <option value="">None / Manual</option>
+                                </select>
+                            </div>
                             <div class="form-group"><label>Mistakes Made</label>
                                 <select id="t-mistakes" class="form-control">
                                     <option value="">None</option>
@@ -188,9 +192,15 @@
             </div>
             <div id="reports" class="section">
                 <h2>Reports</h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;" id="reports-grid">
-                    <!-- Populated dynamically -->
-                </div>
+
+                <h3 style="margin-bottom: 10px;">Monthly Performance</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;" id="monthly-reports-grid"></div>
+
+                <h3 style="margin-bottom: 10px;">Risk / Reward Analysis</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;" id="rr-reports-grid"></div>
+
+                <h3 style="margin-bottom: 10px;">Weekday Performance</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;" id="reports-grid"></div>
             </div>
             <div id="analytics" class="section">
                 <h2>Strategy Analytics</h2>
@@ -201,8 +211,15 @@
             <div id="rules" class="section">
                 <h2>Rule Tracking</h2>
                 <div class="card">
-                    <p>Rules are tracked directly from your Trade Journal entries.</p>
-                    <div id="rules-grid" style="margin-top: 15px; display: grid; gap: 10px;"></div>
+                    <p>Manage your custom rules here. They will appear in the trade journal form.</p>
+                    <form id="rule-form" style="display: flex; gap: 10px; margin-top: 15px; margin-bottom: 20px;">
+                        <input type="text" id="new-rule-input" class="form-control" placeholder="Enter a new rule..." required>
+                        <button type="submit" class="btn btn-primary" style="white-space: nowrap;">Add Rule</button>
+                    </form>
+                    <div id="custom-rules-list" style="display: grid; gap: 10px; margin-bottom: 20px;"></div>
+
+                    <h3 style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 20px;">Rule Analytics</h3>
+                    <div id="rules-grid" style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;"></div>
                 </div>
             </div>
             <div id="mistakes" class="section">
@@ -305,6 +322,7 @@
 
         let tradesData = [];
         let editingTradeId = null;
+        let userRules = [];
 
         window.closeModal = function() {
             document.getElementById('trade-details-modal').classList.add('hidden');
@@ -353,13 +371,65 @@
                     email: user.email,
                     plan: "free",
                     tradeCountMonth: 0,
-                    tradeCountMonthKey: currentMonthKey
+                    tradeCountMonthKey: currentMonthKey,
+                    rules: []
                 };
                 await setDoc(userRef, userPlanData);
             }
 
+            userRules = userPlanData.rules || [];
+            updateRulesUI();
             updateSubscriptionUI();
         }
+
+        async function saveRules() {
+            if (!currentUser) return;
+            const userRef = doc(db, "users", currentUser.uid);
+            await updateDoc(userRef, { rules: userRules });
+            updateRulesUI();
+        }
+
+        function updateRulesUI() {
+            const rulesSelect = document.getElementById('t-rules');
+            const rulesList = document.getElementById('custom-rules-list');
+
+            // Update select dropdown
+            let selectHtml = '<option value="">None</option>';
+            userRules.forEach(r => {
+                selectHtml += `<option value="${r}">${r}</option>`;
+            });
+            rulesSelect.innerHTML = selectHtml;
+
+            // Update management list
+            if (userRules.length === 0) {
+                rulesList.innerHTML = '<div style="color:var(--text-muted)">No rules created yet.</div>';
+            } else {
+                rulesList.innerHTML = userRules.map((r, index) => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 6px; border: 1px solid var(--border-color);">
+                        <span>${r}</span>
+                        <button class="btn btn-outline btn-sm delete-rule-btn" data-index="${index}" style="padding: 4px 8px; font-size: 12px; color: var(--danger-color); border-color: rgba(255,95,109,0.3);">Del</button>
+                    </div>
+                `).join('');
+
+                document.querySelectorAll('.delete-rule-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const idx = e.target.getAttribute('data-index');
+                        userRules.splice(idx, 1);
+                        await saveRules();
+                    });
+                });
+            }
+        }
+
+        document.getElementById('rule-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const val = document.getElementById('new-rule-input').value.trim();
+            if (val && !userRules.includes(val)) {
+                userRules.push(val);
+                await saveRules();
+                document.getElementById('new-rule-input').value = '';
+            }
+        });
 
         function updateSubscriptionUI() {
             if (!userPlanData) return;
@@ -375,7 +445,7 @@
                 const remaining = 10 - used;
                 tradesUsageEl.textContent = `(${used}/10 used, ${remaining} remaining)`;
 
-                if (used >= 10) {
+                if (used >= 10 && !editingTradeId) {
                     upgradeMsg.style.display = 'block';
                     saveBtn.disabled = true;
                 } else {
@@ -509,6 +579,9 @@
 
             const weekdayStats = {0:{p:0, w:0, t:0}, 1:{p:0, w:0, t:0}, 2:{p:0, w:0, t:0}, 3:{p:0, w:0, t:0}, 4:{p:0, w:0, t:0}, 5:{p:0, w:0, t:0}, 6:{p:0, w:0, t:0}};
             const strategyStats = {};
+            const monthlyStats = {};
+            let maxRR = 0;
+            let minRR = Infinity;
 
             tradesData.forEach(t => {
                 if (t.outcome === 'Win') wins++;
@@ -534,8 +607,16 @@
                     const risk = Math.abs(t.entryPrice - t.stopLoss);
                     const reward = Math.abs(t.exitPrice - t.entryPrice);
                     if (risk > 0) {
-                        riskRewardTotal += (reward / risk);
+                        const rr = reward / risk;
+                        // For losses, rr is technically negative reward vs risk.
+                        // But standard RR usually tracks the actual ratio achieved if won, or 1:R if lost.
+                        // Let's use simple signed R multiple.
+                        const actualRR = t.outcome === 'Loss' ? -1 : rr;
+
+                        riskRewardTotal += actualRR;
                         rrCount++;
+                        if (actualRR > maxRR) maxRR = actualRR;
+                        if (actualRR < minRR) minRR = actualRR;
                     }
                 }
 
@@ -555,10 +636,17 @@
                 if (t.emotion > 5) { emoTotal.high++; if (t.outcome === 'Win') emoWins.high++; }
                 else { emoTotal.low++; if (t.outcome === 'Win') emoWins.low++; }
 
-                const day = new Date(t.tradeDate).getDay();
+                const d = new Date(t.tradeDate);
+                const day = d.getDay();
                 weekdayStats[day].t++;
                 weekdayStats[day].p += pnl;
                 if (t.outcome === 'Win') weekdayStats[day].w++;
+
+                const monthKey = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+                if (!monthlyStats[monthKey]) monthlyStats[monthKey] = { pnl: 0, wins: 0, total: 0 };
+                monthlyStats[monthKey].total++;
+                monthlyStats[monthKey].pnl += pnl;
+                if (t.outcome === 'Win') monthlyStats[monthKey].wins++;
             });
 
             const winRate = total > 0 ? ((wins / total) * 100).toFixed(1) : 0;
@@ -607,6 +695,24 @@
             document.getElementById('ai-mistake').textContent = topMistake !== '-' ? topMistake : 'None';
 
             // Report Updates
+            // 1. Monthly
+            document.getElementById('monthly-reports-grid').innerHTML = Object.keys(monthlyStats).sort((a,b) => b.localeCompare(a)).map(m => {
+                const monthName = new Date(m + '-01').toLocaleString('default', { month: 'short', year: 'numeric' });
+                const mWin = ((monthlyStats[m].wins / monthlyStats[m].total) * 100).toFixed(1);
+                const pnlColor = monthlyStats[m].pnl >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
+                return `<div class="card" style="margin-bottom:0; border-left: 3px solid ${pnlColor};"><h4>${monthName}</h4>
+                    <div style="font-size: 20px; font-weight: bold; margin-top: 5px; color: ${pnlColor}">$${monthlyStats[m].pnl.toFixed(2)}</div>
+                    <div style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Win Rate: ${mWin}% (${monthlyStats[m].total} trades)</div></div>`;
+            }).join('');
+
+            // 2. Risk Reward
+            document.getElementById('rr-reports-grid').innerHTML = `
+                <div class="card" style="margin-bottom:0"><h4>Average R:R</h4><div style="font-size:24px">${avgRr}</div></div>
+                <div class="card" style="margin-bottom:0"><h4>Best R Multiple</h4><div style="font-size:24px; color:var(--success-color)">+${maxRR > 0 ? maxRR.toFixed(2) : '0.00'}R</div></div>
+                <div class="card" style="margin-bottom:0"><h4>Worst R Multiple</h4><div style="font-size:24px; color:var(--danger-color)">${minRR !== Infinity ? minRR.toFixed(2) : '0.00'}R</div></div>
+            `;
+
+            // 3. Weekday
             const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             let bestDay = '-';
             let bestDayWin = -1;
@@ -670,12 +776,15 @@
             const daysInMonth = new Date(year, month + 1, 0).getDate();
 
             // Daily PnL aggregate
-            const dailyPnL = {};
+            const dailyStats = {};
             tradesData.forEach(t => {
                 const td = new Date(t.tradeDate);
                 // Adjust for local time simple matching
                 if (td.getUTCFullYear() === year && td.getUTCMonth() === month) {
-                    dailyPnL[td.getUTCDate()] = (dailyPnL[td.getUTCDate()] || 0) + ((t.exitPrice - t.entryPrice) * t.quantity);
+                    const dateKey = td.getUTCDate();
+                    if (!dailyStats[dateKey]) dailyStats[dateKey] = { pnl: 0, count: 0 };
+                    dailyStats[dateKey].pnl += ((t.exitPrice - t.entryPrice) * t.quantity);
+                    dailyStats[dateKey].count += 1;
                 }
             });
 
@@ -683,14 +792,25 @@
                 calGrid.innerHTML += `<div style="padding: 15px; border: 1px solid rgba(255,255,255,0.05); opacity: 0.3;"></div>`;
             }
             for (let i = 1; i <= daysInMonth; i++) {
-                const pnl = dailyPnL[i] || 0;
+                const stat = dailyStats[i];
                 let bg = 'rgba(255,255,255,0.05)';
-                if (dailyPnL[i] !== undefined) {
-                    bg = pnl >= 0 ? 'rgba(0,229,160,0.2)' : 'rgba(255,95,109,0.2)';
+                let content = '';
+
+                if (stat) {
+                    bg = stat.pnl >= 0 ? 'rgba(0,229,160,0.2)' : 'rgba(255,95,109,0.2)';
+                    content = `
+                        <div style="font-size: 11px; margin-top: 5px; font-weight: bold; color: ${stat.pnl >= 0 ? 'var(--success-color)' : 'var(--danger-color)'}">
+                            ${stat.pnl >= 0 ? '+' : ''}$${stat.pnl.toFixed(2)}
+                        </div>
+                        <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">
+                            ${stat.count} trade${stat.count > 1 ? 's' : ''}
+                        </div>
+                    `;
                 }
+
                 calGrid.innerHTML += `<div style="padding: 15px; border: 1px solid rgba(255,255,255,0.05); background: ${bg}; border-radius: 4px;">
                     <div>${i}</div>
-                    <div style="font-size: 10px; margin-top: 5px;">${dailyPnL[i] !== undefined ? '$'+pnl.toFixed(2) : ''}</div>
+                    ${content}
                 </div>`;
             }
         }
@@ -815,6 +935,8 @@
                         document.getElementById('btn-save-trade').textContent = 'Update Trade';
                         document.getElementById('btn-cancel-edit').classList.remove('hidden');
 
+                        updateSubscriptionUI();
+
                         // Switch to journal tab and scroll up
                         document.querySelector('.nav-link[data-target="journal"]').click();
                         document.getElementById('trade-form-container').scrollIntoView({behavior: 'smooth'});
@@ -839,6 +961,7 @@
             document.getElementById('trade-form').reset();
             document.getElementById('btn-save-trade').textContent = 'Save Trade';
             document.getElementById('btn-cancel-edit').classList.add('hidden');
+            updateSubscriptionUI();
         });
 
         document.getElementById('trade-form').addEventListener('submit', async (e) => {
@@ -890,6 +1013,7 @@
                 document.getElementById('btn-save-trade').textContent = 'Save Trade';
                 document.getElementById('btn-cancel-edit').classList.add('hidden');
 
+                updateSubscriptionUI();
                 await loadTrades();
             } catch (error) {
                 console.error("Error saving trade: ", error);
