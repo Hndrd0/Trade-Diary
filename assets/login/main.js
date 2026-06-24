@@ -461,38 +461,27 @@ function signup(postUrl) {
         return false;
     }
 
-    // Submit via AJAX
-    $.ajax({
-        url: postUrl,
-        method: 'POST',
-        data: $('#registerFormElement').serialize(),
-        success: function (response) {
-            if (response.success) {
-                createToast('success', 'Registration Successful', 'Account created successfully! Please check your email for verification.');
-                // Reset form
-                document.querySelector('#registerFormElement').reset();
-                // Switch to login form after a delay
-                setTimeout(() => {
-                    showLogin();
-                }, 2000);
-            } else {
-                createToast('error', 'Registration failed', response.message || 'Signup failed!');
-                if (response.paymentError == 1) {
-                    window.location.replace(base_url + '#pricing')
-                }
-            }
-        },
+    if (!window.firebaseAuth) {
+        createToast('error', 'Error', 'Firebase is not initialized.');
+        return false;
+    }
 
-        error: function (xhr) {
-            let res = xhr.responseJSON;
-            if (res && res.message) {
-                notyf.error(res.message);
-                createToast('error', 'Registration failed', res.message);
-            } else {
-                createToast('error', 'Registration failed', 'Server error. Please try again later.');
-            }
-        }
-    });
+    // Submit via Firebase Auth
+    window.createUserWithEmailAndPassword(window.firebaseAuth, email, password)
+        .then((userCredential) => {
+            createToast('success', 'Registration Successful', 'Account created successfully!');
+            // Reset form
+            document.querySelector('#registerFormElement').reset();
+            // Switch to login form after a delay
+            setTimeout(() => {
+                showLogin();
+            }, 2000);
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            createToast('error', 'Registration failed', errorMessage);
+        });
 
     return false; // Prevent default form submission
 }
@@ -524,34 +513,27 @@ function signin(postUrl) {
         return false;
     }
 
-    // Submit via AJAX
-    $.ajax({
-        url: postUrl,
-        method: 'POST',
-        data: $('#loginFormElement').serialize(),
-        success: function (response) {
-            if (response.success) {
-                createToast('success', 'Login Successful', 'Redirecting to your dashboard...');
-                // Reset form
-                $('#loginFormElement')[0].reset();
-                // Redirect to dashboard
-                setTimeout(() => {
-                    window.location.href = response.redirectTo;
-                }, 1500);
-            } else {
-                // Show specific message if email is not verified
-                if (response.code === 'EMAIL_NOT_VERIFIED') {
-                    createToast('error', 'Email Not Verified', 'Please check your email inbox to verify your account.');
-                } else {
-                    createToast('error', 'Login Failed', response.message || 'Invalid email or password.');
-                }
-            }
-        },
-        error: function (xhr) {
-            const res = xhr.responseJSON;
-            createToast('error', 'Login Failed', res?.message || 'Server error. Please try again.');
-        }
-    });
+    if (!window.firebaseAuth) {
+        createToast('error', 'Error', 'Firebase is not initialized.');
+        return false;
+    }
+
+    // Submit via Firebase Auth
+    window.signInWithEmailAndPassword(window.firebaseAuth, email, $('#loginPassword').val().trim())
+        .then((userCredential) => {
+            createToast('success', 'Login Successful', 'Redirecting to your dashboard...');
+            // Reset form
+            $('#loginFormElement')[0].reset();
+            // Redirect to dashboard
+            setTimeout(() => {
+                window.location.href = base_url;
+            }, 1500);
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            createToast('error', 'Login Failed', errorMessage);
+        });
 
     return false;
 }
