@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="assets/images/favicons/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicons/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicons/favicon-32x32.png">
+    <link rel="apple-touch-icon" href="assets/images/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192"
+        href="assets/images/favicons/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512"
+        href="assets/images/favicons/android-chrome-512x512.png">
+    <link rel="manifest" href="assets/images/favicons/site.webmanifest">
+
+
+    <!-- SEO -->
+    <title>Trading Psychology Journal | Track Emotions &amp; Build Discipline | TradeDiary</title>
+    <meta name="description" content="Track your trading emotions, discipline, and psychological patterns with TradeDiary. Identify how fear, greed, and overconfidence affect your P&amp;L. Built for Indian traders." />
+    <meta name="keywords" content="trading psychology, trading psychology journal, emotional trading tracker, trading discipline India, trading mindset journal" />
+    <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+    <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
+    <link rel="canonical" href="trading-psychology.html" />
+    <link rel="alternate" hreflang="en-IN" href="trading-psychology.html" />
+    <link rel="alternate" hreflang="x-default" href="trading-psychology.html" />
+    <meta name="theme-color" content="#6d5dfc" />
+    <meta name="application-name" content="Trade Diary" />
+    <meta name="apple-mobile-web-app-title" content="Trade Diary" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Trading Psychology Journal – Track Emotions &amp; Build Discipline" />
+    <meta property="og:description" content="Understand how emotions drive your trading decisions. TradeDiary helps Indian traders track psychological patterns and build discipline." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://tradediary.in/trading-psychology" />
+    <meta property="og:image" content="https://tradediary.in/assets/images/og_image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Trade Diary" />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@tradediary_in">
+    <meta name="twitter:title" content="Trading Psychology Journal – Track Emotions &amp; Build Discipline">
+    <meta name="twitter:description" content="Understand how emotions drive your trading decisions. TradeDiary helps Indian traders track psychological patterns and build discipline.">
+    <meta name="twitter:image" content="https://tradediary.in/assets/images/og_image.png">
+
+    <!-- Verifications -->
+    <meta name="trustpilot-one-time-domain-verification-id" content="5a08f222-49b5-477c-b898-902da2d98979"/>
+    <meta name="msvalidate.01" content="2581FC8D82A588B9452C2E351F1E91DF" />
+    <meta name="facebook-domain-verification" content="x1zbe62qozivmx5zd4l5q7bq39sw7z" />
+
+        <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is trading psychology?","acceptedAnswer":{"@type":"Answer","text":"Trading psychology refers to the emotions and mental states that influence trading decisions — including fear of missing out (FOMO), revenge trading after losses, overconfidence after winning streaks, and the inability to cut losing positions. It is one of the biggest factors separating profitable traders from losing ones."}},{"@type":"Question","name":"How does journaling help with trading psychology?","acceptedAnswer":{"@type":"Answer","text":"A trading journal forces you to record your emotional state before and after each trade. Over time, this creates a data trail that shows you exactly how emotions like fear, greed, or impatience affect your P&L — giving you the self-awareness to correct those patterns."}},{"@type":"Question","name":"How does TradeDiary help track trading psychology?","acceptedAnswer":{"@type":"Answer","text":"TradeDiary lets you log your emotional state, confidence level, and rule adherence for every trade. The mistake tracker tags behavioural errors like overtrading, breaking stop-losses, and revenge trading. Analytics then show how these patterns correlate with your P&L."}}]}</script>
+
+        <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://tradediary.in/"},{"@type":"ListItem","position":2,"name":"Trading Psychology Journal – Track Emotions & Build Discipline","item":"https://tradediary.in/trading-psychology"}]}</script>
+
+
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://connect.facebook.net/">
+    <link rel="dns-prefetch" href="https://checkout.razorpay.com/">
+    <link rel="preload" as="image" href="assets/images/trade-diary-purple-v2.png">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/font-awesome-pro-5/css/all.min.css">
+
+    <!-- Styles – new dark design (drop Tailwind dependency for landing) -->
+    <script src="assets/tailwind-3.4.16/tailwind.js"></script>
+    <link rel="stylesheet" href="assets/css/test/landingStyle.css">
+
+    <!-- Google Tag Manager -->
+    <script>(function (w, d, s, l, i) { w[l] = w[l] || []; w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' }); var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f); })(window, document, 'script', 'dataLayer', 'GTM-PX3MR8B8');</script>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Q8W8162DZ2"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-Q8W8162DZ2');
+    </script>
+
+    <!-- Meta Pixel -->
+    <script>
+        !function (f, b, e, v, n, t, s) { if (f.fbq) return; n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments) }; if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0'; n.queue = []; t = b.createElement(e); t.async = !0; t.src = v; s = b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t, s) }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '1397926855307012');
+        fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+            src="https://www.facebook.com/tr?id=1397926855307012&ev=PageView&noscript=1" /></noscript>
+</head>
+
+<body>
+    <!-- GTM noscript -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PX3MR8B8" height="0" width="0"
+            style="display:none;visibility:hidden"></iframe></noscript>
+
+    <!-- ── NAVIGATION ── -->
+    <header>
+        <nav id="td-nav">
+            <div class="nav-inner">
+                <a class="nav-logo" href="index.html">
+                    <img src="assets/images/trade-diary-purple-v2.png" alt="Trade Diary Logo" class="force-light-logo"
+                        style="width: 40px; height: 40px; max-width: 40px;" />
+
+                    <img src="assets/images/trade-diary-purple-v2.png" alt="Trade Diary Logo" class="force-dark-logo"
+                        style="width: 40px; height: 40px; max-width: 40px;" />
+
+                    <span class="hide-on-mobile">
+                        Trade Diary
+                    </span>
+                </a>
+
+                <ul class="nav-links-list">
+                    <li><a href="index.html#hero">Home</a></li>
+                    <li><a href="index.html#features">Features</a></li>
+                    <li><a href="index.html#how-it-works">How It Works</a></li>
+                    <li><a href="index.html#testimonials">Testimonials</a></li>
+                    <li><a href="index.html#pricing">Pricing</a></li>
+                    <li><a href="index.html#faq">FAQ</a></li>
+                    <li><a href="Login.html" class="btn-nav-login">Login</a></li>
+                </ul>
+
+                <button type="button" id="mobile-menu-button" aria-label="Open menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+
+        <div id="mobile-menu" class="hidden">
+            <a href="index.html#hero">Home</a>
+            <a href="index.html#features">Features</a>
+            <a href="index.html#how-it-works">How It Works</a>
+            <a href="index.html#testimonials">Testimonials</a>
+            <a href="index.html#pricing">Pricing</a>
+            <a href="index.html#faq">FAQ</a>
+            <a href="Login.html" style="color:#818cf8;font-weight:600;">Login</a>
+        </div>
+    </header>
+
+﻿
+<section style="padding:72px 24px 56px;text-align:center;background:linear-gradient(180deg,rgba(79,70,229,0.08) 0%,transparent 100%);">
+  <div style="max-width:800px;margin:0 auto;">
+    <div class="section-label">Trading Psychology</div>
+    <h1 style="font-size:clamp(2rem,5vw,3.2rem);font-weight:900;line-height:1.15;margin:16px 0 20px;color:var(--text);">
+      Track Your Emotions.<br><em style="color:var(--primary-light);font-style:normal;">Build Trading Discipline.</em>
+    </h1>
+    <p style="font-size:1.15rem;color:var(--text-muted);max-width:640px;margin:0 auto 32px;line-height:1.7;">
+      Most traders lose not because of a bad strategy — but because of psychology. TradeDiary helps you track emotional patterns, identify behavioural mistakes, and build the discipline that separates consistent traders from emotional ones.
+    </p>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;">
+      <a href="https://tradediary.in/signup" class="btn-primary">Start Tracking Free</a>
+      <a href="trading-mistake-tracker.html" class="btn-secondary-outline">See Mistake Tracker →</a>
+    </div>
+  </div>
+</section>
+
+<!-- What is Trading Psychology -->
+<section style="padding:56px 24px;">
+  <div class="section-inner" style="max-width:860px;margin:0 auto;">
+    <div class="section-head">
+      <div class="section-label">The Problem</div>
+      <h2 class="section-heading">Why Traders Lose to <em>Their Own Mind</em></h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;margin-top:36px;">
+            <div class="feature-card">
+        <div style="font-size:1.4rem;margin-bottom:12px;color:var(--primary-light);"><i class="fas fa-exclamation-triangle"></i></div>
+        <h3>Fear & FOMO</h3>
+        <p>Fear of missing out makes traders enter late. Fear of loss makes them exit early or move stop-losses — turning small losses into large ones.</p>
+      </div>
+            <div class="feature-card">
+        <div style="font-size:1.4rem;margin-bottom:12px;color:var(--primary-light);"><i class="fas fa-fire"></i></div>
+        <h3>Revenge Trading</h3>
+        <p>After a loss, the urge to "win it back" leads traders to take low-quality setups with oversized positions — compounding the damage.</p>
+      </div>
+            <div class="feature-card">
+        <div style="font-size:1.4rem;margin-bottom:12px;color:var(--primary-light);"><i class="fas fa-fire"></i></div>
+        <h3>Overconfidence</h3>
+        <p>A winning streak creates overconfidence. Traders increase size, ignore risk, and one large loss wipes out weeks of gains.</p>
+      </div>
+            <div class="feature-card">
+        <div style="font-size:1.4rem;margin-bottom:12px;color:var(--primary-light);"><i class="fas fa-redo-alt"></i></div>
+        <h3>Overtrading</h3>
+        <p>Boredom or the need to "do something" pushes traders to take trades outside their plan, leading to unnecessary losses and commissions.</p>
+      </div>
+          </div>
+  </div>
+</section>
+
+<!-- How Journaling Helps -->
+<section style="padding:56px 24px;background:var(--surface);">
+  <div class="section-inner" style="max-width:860px;margin:0 auto;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;">
+      <div>
+        <div class="section-label">The Solution</div>
+        <h2 style="font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;color:var(--text);margin:12px 0 16px;line-height:1.2;">
+          How Journaling Fixes Trading Psychology
+        </h2>
+        <p style="color:var(--text-muted);line-height:1.8;margin-bottom:16px;">
+          A trading journal creates a data trail of your emotional state, decision-making, and outcomes. Over months, this data shows you exactly how your psychology drives your P&L — patterns invisible in the moment become obvious in the review.
+        </p>
+        <p style="color:var(--text-muted);line-height:1.8;margin-bottom:16px;">
+          When you can see that <strong style="color:var(--text);">80% of your revenge trades are losers</strong> or that <strong style="color:var(--text);">you make 70% of your money in the first hour</strong>, your behaviour changes — not through willpower, but through data.
+        </p>
+        <p style="color:var(--text-muted);line-height:1.8;">
+          TradeDiary makes this process systematic, automatic, and actionable for Indian traders.
+        </p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+                <div style="display:flex;gap:16px;align-items:flex-start;">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.8rem;font-weight:700;color:#fff;">1</div>
+          <div>
+            <div style="font-size:0.95rem;font-weight:700;color:var(--text);margin-bottom:4px;">Log emotional state</div>
+            <div style="font-size:0.85rem;color:var(--text-muted);line-height:1.5;">Rate your confidence and emotional state before every trade</div>
+          </div>
+        </div>
+                <div style="display:flex;gap:16px;align-items:flex-start;">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.8rem;font-weight:700;color:#fff;">2</div>
+          <div>
+            <div style="font-size:0.95rem;font-weight:700;color:var(--text);margin-bottom:4px;">Tag psychological mistakes</div>
+            <div style="font-size:0.85rem;color:var(--text-muted);line-height:1.5;">Label trades as revenge, FOMO, overtrading, rule-break</div>
+          </div>
+        </div>
+                <div style="display:flex;gap:16px;align-items:flex-start;">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.8rem;font-weight:700;color:#fff;">3</div>
+          <div>
+            <div style="font-size:0.95rem;font-weight:700;color:var(--text);margin-bottom:4px;">Review patterns</div>
+            <div style="font-size:0.85rem;color:var(--text-muted);line-height:1.5;">See how emotional states correlate with P&L in the analytics</div>
+          </div>
+        </div>
+                <div style="display:flex;gap:16px;align-items:flex-start;">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:0.8rem;font-weight:700;color:#fff;">4</div>
+          <div>
+            <div style="font-size:0.95rem;font-weight:700;color:var(--text);margin-bottom:4px;">Build rules</div>
+            <div style="font-size:0.85rem;color:var(--text-muted);line-height:1.5;">Create trading rules and track adherence over time</div>
+          </div>
+        </div>
+              </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section style="padding:56px 24px;">
+  <div class="section-inner">
+    <div class="section-head">
+      <div class="section-label">Features</div>
+      <h2 class="section-heading">Psychology Tracking <em>Tools</em> in TradeDiary</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;margin-top:36px;">
+            <div class="feature-card">
+        <div style="font-size:1.4rem;margin-bottom:12px;color:var(--primary-light);"><i class="fas fa-smile"></i></div>
+        <h3>Emotional State Logging</h3>
+        <p>Log your confidence level, emotional state, and mental clarity before each trade. Correlate mood with outcomes.</p>
+      </div>
+            <div class="feature-card">
+        <div style="font-size:1.4rem;margin-bottom:12px;color:var(--primary-light);"><i class="fas fa-bullseye"></i></div>
+        <h3>Mistake Tracker</h3>
+        <p>Tag every trade with specific psychological errors: FOMO, revenge, overtrading, moving stop-loss, breaking rules.</p>
+      </div>
+            <div class="feature-card">
+        <div style="font-size:1.4rem;margin-bottom:12px;color:var(--primary-light);"><i class="fas fa-chart-bar"></i></div>
+        <h3>Behavioural Analytics</h3>
+        <p>See which mistakes cost you the most in rupees. Identify your most expensive psychological patterns.</p>
+      </div>
+            <div class="feature-card">
+        <div style="font-size:1.4rem;margin-bottom:12px;color:var(--primary-light);"><i class="fas fa-clipboard-list"></i></div>
+        <h3>Rules & Checklist</h3>
+        <p>Create pre-trade checklists and trading rules. Track adherence over time to build systematic discipline.</p>
+      </div>
+            <div class="feature-card">
+        <div style="font-size:1.4rem;margin-bottom:12px;color:var(--primary-light);"><i class="fas fa-chart-line"></i></div>
+        <h3>Streak Awareness</h3>
+        <p>TradeDiary shows your win/loss streaks so you can spot overconfidence after wins or desperation after losses.</p>
+      </div>
+            <div class="feature-card">
+        <div style="font-size:1.4rem;margin-bottom:12px;color:var(--primary-light);"><i class="fas fa-robot"></i></div>
+        <h3>AI Psychology Insights</h3>
+        <p>Weekly AI summary highlights recurring psychological patterns in your trading and suggests specific improvements.</p>
+      </div>
+          </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section style="padding:56px 24px;background:var(--surface);">
+  <div class="section-inner" style="max-width:720px;margin:0 auto;">
+    <div class="section-head">
+      <div class="section-label">FAQ</div>
+      <h2 class="section-heading">Trading Psychology <em>Questions</em></h2>
+    </div>
+    <div class="faq-list" style="margin-top:32px;">
+            <div class="faq-item">
+        <button class="faq-q">What is trading psychology?<span class="faq-icon">+</span></button>
+        <div class="faq-a">Trading psychology refers to the emotions and mental states that influence trading decisions — including FOMO, revenge trading after losses, overconfidence after winning streaks, and the inability to cut losing positions. It is one of the biggest factors separating profitable traders from losing ones.</div>
+      </div>
+            <div class="faq-item">
+        <button class="faq-q">How does journaling help with trading psychology?<span class="faq-icon">+</span></button>
+        <div class="faq-a">A trading journal forces you to record your emotional state before and after each trade. Over time, this creates a data trail that shows you exactly how emotions like fear, greed, or impatience affect your P&L — giving you the self-awareness to change those patterns.</div>
+      </div>
+            <div class="faq-item">
+        <button class="faq-q">How does TradeDiary help with trading psychology?<span class="faq-icon">+</span></button>
+        <div class="faq-a">TradeDiary lets you log your emotional state, confidence level, and rule adherence for every trade. The mistake tracker tags behavioural errors like overtrading, breaking stop-losses, and revenge trading. Analytics then show how these patterns correlate with your P&L in rupees.</div>
+      </div>
+            <div class="faq-item">
+        <button class="faq-q">What are the most common trading psychology mistakes for Indian traders?<span class="faq-icon">+</span></button>
+        <div class="faq-a">The most common psychological mistakes are: (1) revenge trading after a loss, (2) averaging down into losing positions, (3) not booking profits due to greed, (4) overtrading out of boredom, and (5) entering trades due to FOMO without a clear setup. TradeDiary's mistake tracker helps you quantify exactly which of these is most expensive for you.</div>
+      </div>
+          </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section style="padding:56px 24px;">
+  <div class="section-inner" style="max-width:640px;margin:0 auto;">
+    <div class="cta-box">
+      <h2>Stop Trading on <em style="font-style:normal;color:#818cf8;">Emotions</em></h2>
+      <p>Start tracking your trading psychology today. Free to start, powerful to grow with.</p>
+      <div class="cta-btns">
+        <a href="https://tradediary.in/signup" class="btn-primary">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          Start Free
+        </a>
+        <a href="trading-mistake-tracker.html" class="btn-secondary-outline">Mistake Tracker →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+    <div class="footer-inner">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="index.html" class="nav-logo" style="margin-bottom:12px;text-decoration:none;">
+                    <!-- <div class="logo-icon">T</div> -->
+                    <span style="font-weight:700;font-size:17px;">Trade Diary</span>
+                </a>
+                <p>India's most advanced trading journal for serious traders looking to improve their performance.</p>
+            </div>
+
+            <div class="footer-col">
+                <h4>Company</h4>
+                <a href="about-us.html">About Us</a>
+                <a href="https://wa.me/919405893959" target="_blank">WhatsApp: +91 9405893959</a>
+                <a href="contact-us.html">Contact Us</a>
+                <a href="careers.html">Careers</a>
+                <a href="partnership.html">Partnership</a>
+            </div>
+
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <a href="disclaimer.html">Disclaimer</a>
+                <a href="refund-and-cancellation.html">Refund &amp; Cancellation</a>
+                <a href="disclosures.html">Disclosures</a>
+                <a href="terms-and-conditions.html">Terms &amp; Conditions</a>
+                <a href="privacy-policy.html">Privacy Policy</a>
+                <a href="shipping-policy.html">Shipping Policy</a>
+            </div>
+
+            <div class="footer-col">
+                <h4>Trading Journals</h4>
+                <a href="trading-journal-india.html">Trading Journal India</a>
+                <a href="intraday-trading-journal.html">Intraday Trading Journal</a>
+                <a href="options-trading-journal.html">Options Trading Journal</a>
+                <a href="stock-trading-journal.html">Stock Trading Journal</a>
+                <a href="trading-journal-vs-excel.html">Journal vs Excel</a>
+                <a href="best-trading-journal-india.html">Best Trading Journal India</a>
+                <a href="swing-trading-journal.html">Swing Trading Journal</a>
+                <a href="trading-mistake-tracker.html">Mistake Tracker</a>
+            </div>
+
+            <div class="footer-col">
+                <h4>Resources</h4>
+                <a href="features.html">Features</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="free-trading-journal.html">Free Journal</a>
+                <a href="trading-journal-app.html">Journal App</a>
+                <a href="trading-journal-template.html">Journal Template</a>
+                <a href="paper-trading.html">Paper Trading</a>
+                <a href="trading-psychology.html">Trading Psychology</a>
+                <a href="blogs/index.html">Blog</a>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>© 2026 Trade Diary. All rights reserved.</span>
+        </div>
+    </div>
+</footer>
+
+<script>const base_url = '/';</script>
+<script src="assets/jquery/jquery.min.js"></script>
+<script src="assets/razorpay/checkout.js"></script>
+<script src="assets/js/test/landing.js"></script>
+</body>
+</html>

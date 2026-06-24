@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Advanced Trading Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <!-- <link rel="stylesheet" href="https://tradediary.in/assets/font-awesome-pro-5/css/all.min.css"> -->
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #080810;
+            --card: #0e0e1c;
+            --border: rgba(255, 255, 255, 0.06);
+            --border-h: rgba(255, 255, 255, 0.12);
+            --cyan: #00c6ff;
+            --purple: #6c47ff;
+            --text-1: #f0f0f8;
+            --text-2: #8888aa;
+            --text-3: #454560;
+            --error: #ff5f6d;
+            --success: #00e5a0;
+            --r: 14px;
+            --rs: 9px;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text-1);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ── Background ── */
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+            background-size: 52px 52px;
+        }
+
+        .bg-r {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(130px);
+            will-change: transform;
+        }
+
+        .bg-r1 {
+            width: 640px;
+            height: 640px;
+            background: radial-gradient(circle, rgba(108, 71, 255, 0.14) 0%, transparent 70%);
+            top: -220px;
+            left: -160px;
+            animation: driftA 20s ease-in-out infinite;
+        }
+
+        .bg-r2 {
+            width: 520px;
+            height: 520px;
+            background: radial-gradient(circle, rgba(0, 198, 255, 0.1) 0%, transparent 70%);
+            bottom: -160px;
+            right: -110px;
+            animation: driftB 24s ease-in-out infinite;
+        }
+
+        @keyframes driftA {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            40% {
+                transform: translate(40px, -50px) scale(1.04);
+            }
+
+            70% {
+                transform: translate(-20px, 30px) scale(0.97);
+            }
+        }
+
+        @keyframes driftB {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            35% {
+                transform: translate(-30px, 40px);
+            }
+
+            65% {
+                transform: translate(25px, -25px);
+            }
+        }
+
+        /* ── Page ── */
+        .page {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 460px;
+            padding: 24px 16px 40px;
+            animation: fadeUp 0.45s ease-out both;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(22px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── Card ── */
+        .auth-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow:
+                0 0 0 1px rgba(255, 255, 255, 0.02) inset,
+                0 32px 64px rgba(0, 0, 0, 0.55);
+        }
+
+        /* ── Tabs ── */
+        .tabs {
+            display: flex;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 18px 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-3);
+            transition: color 0.25s;
+            letter-spacing: 0.2px;
+        }
+
+        .tab-btn.active {
+            color: var(--text-1);
+        }
+
+        #tabIndicator {
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 50%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--purple), var(--cyan));
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 2px 2px 0 0;
+        }
+
+        /* ── Form body ── */
+        .form-body {
+            padding: 32px 32px 28px;
+        }
+
+        /* ── Heading ── */
+        .form-heading {
+            text-align: center;
+            margin-bottom: 26px;
+        }
+
+        .form-heading h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-1);
+            margin-bottom: 5px;
+            letter-spacing: -0.4px;
+        }
+
+        .form-heading p {
+            font-size: 13.5px;
+            color: var(--text-2);
+        }
+
+        /* ── Social btn ── */
+        .social-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: var(--r);
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--text-1);
+            transition: background 0.2s, border-color 0.2s, transform 0.15s;
+            text-decoration: none;
+        }
+
+        .social-btn:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--border-h);
+            transform: translateY(-1px);
+        }
+
+        /* ── Divider ── */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            color: var(--text-3);
+            font-size: 12px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* ── Input group ── */
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--text-2);
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: var(--rs);
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: var(--text-1);
+            transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+            -webkit-appearance: none;
+            height: auto;
+        }
+
+        .form-input::placeholder {
+            color: var(--text-3);
+        }
+
+        .form-input:focus {
+            border-color: rgba(0, 198, 255, 0.35);
+            background: rgba(0, 198, 255, 0.03);
+            box-shadow: 0 0 0 3px rgba(0, 198, 255, 0.06);
+        }
+
+        .form-input[type="password"],
+        .form-input.has-toggle {
+            padding-right: 44px;
+        }
+
+        /* ── Toggle password ── */
+        .toggle-password {
+            position: absolute;
+            right: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--text-3);
+            display: flex;
+            align-items: center;
+            transition: color 0.2s;
+        }
+
+        .toggle-password:hover {
+            color: var(--text-2);
+        }
+
+        /* ── Error message ── */
+        .error-message {
+            font-size: 11.5px;
+            color: var(--error);
+            margin-top: 5px;
+            display: none;
+        }
+
+        /* ── Checkbox ── */
+        .checkbox {
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+            accent-color: var(--cyan);
+            border-radius: 4px;
+        }
+
+        /* ── Row meta ── */
+        .row-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 4px 0 22px;
+        }
+
+        .check-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .check-row label {
+            font-size: 13px;
+            color: var(--text-2);
+            cursor: pointer;
+        }
+
+        /* ── Forgot link ── */
+        #forgotPasswordLink {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--cyan);
+            text-decoration: none;
+            transition: opacity 0.2s;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            padding: 0;
+        }
+
+        #forgotPasswordLink:hover {
+            opacity: 0.75;
+            text-decoration: underline;
+        }
+
+        /* ── Primary button ── */
+        .btn-submit {
+            width: 100%;
+            padding: 13.5px;
+            background: linear-gradient(135deg, #6c47ff 0%, #5035d4 100%);
+            border: 1px solid rgba(108, 71, 255, 0.25);
+            border-radius: var(--r);
+            font-family: 'Outfit', sans-serif;
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            letter-spacing: 0.2px;
+            transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(108, 71, 255, 0.4);
+            filter: brightness(1.08);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        /* ── Toggle form link ── */
+        .toggle-form-row {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--text-2);
+        }
+
+        .toggle-form {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--cyan);
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            transition: opacity 0.2s;
+            padding: 0;
+        }
+
+        .toggle-form:hover {
+            opacity: 0.75;
+            text-decoration: underline;
+        }
+
+        /* ── WhatsApp ── */
+        .wa-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            margin-top: 16px;
+            color: var(--text-3);
+            font-size: 12.5px;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .wa-link:hover {
+            color: #25d366;
+        }
+
+        /* ── Terms row ── */
+        .terms-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin-bottom: 18px;
+        }
+
+        .terms-row .checkbox {
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .terms-row label {
+            font-size: 12.5px;
+            color: var(--text-2);
+            line-height: 1.55;
+        }
+
+        .terms-row a {
+            color: var(--cyan);
+            text-decoration: none;
+        }
+
+        .terms-row a:hover {
+            text-decoration: underline;
+        }
+
+        /* ── Toast container ── */
+        .toast-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 18px;
+            pointer-events: none;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 13px 18px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            pointer-events: auto;
+            max-width: 380px;
+            width: 90%;
+            transform: translateY(-70px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 10px;
+            backdrop-filter: blur(20px);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.hide {
+            transform: translateY(-70px);
+            opacity: 0;
+        }
+
+        .toast.success {
+            background: rgba(0, 229, 160, 0.09);
+            border: 1px solid rgba(0, 229, 160, 0.22);
+            color: var(--success);
+        }
+
+        .toast.error {
+            background: rgba(255, 95, 109, 0.09);
+            border: 1px solid rgba(255, 95, 109, 0.22);
+            color: var(--error);
+        }
+
+        .toast.warning {
+            background: rgba(251, 191, 36, 0.09);
+            border: 1px solid rgba(251, 191, 36, 0.22);
+            color: #fbbf24;
+        }
+
+        .toast.info {
+            background: rgba(0, 198, 255, 0.07);
+            border: 1px solid rgba(0, 198, 255, 0.18);
+            color: var(--cyan);
+        }
+
+        .toast-close {
+            margin-left: 8px;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+            background: none;
+            border: none;
+            color: inherit;
+            padding: 2px;
+            display: flex;
+        }
+
+        .toast-close:hover {
+            opacity: 1;
+        }
+
+        /* ── Payment popup ── */
+        #paymentPopup {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.78);
+            backdrop-filter: blur(10px);
+        }
+
+        #paymentPopup.hidden {
+            display: none;
+        }
+
+        .payment-modal {
+            background: var(--card);
+            border: 1px solid rgba(251, 191, 36, 0.16);
+            border-radius: 20px;
+            padding: 40px 28px 28px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            margin: 16px;
+            animation: scaleIn 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.93) translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .payment-icon-wrap {
+            position: absolute;
+            top: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(251, 191, 36, 0.35);
+        }
+
+        .payment-modal h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 19px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: var(--text-1);
+        }
+
+        .payment-modal p {
+            font-size: 13.5px;
+            color: var(--text-2);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .payment-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn-cancel-pay {
+            padding: 10px 22px;
+            border-radius: 10px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-2);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-cancel-pay:hover {
+            border-color: var(--border-h);
+            color: var(--text-1);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .btn-pay-now {
+            padding: 10px 24px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            border: none;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.2px;
+            transition: all 0.2s;
+        }
+
+        .btn-pay-now:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.38);
+        }
+
+        .popup-x {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-3);
+            display: flex;
+            transition: color 0.2s;
+        }
+
+        .popup-x:hover {
+            color: var(--error);
+        }
+
+        /* ── Forgot Password Modal ── */
+        #forgotPasswordModal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.74);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 16px;
+        }
+
+        #forgotPasswordModal.flex {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 420px;
+            overflow: hidden;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7);
+            animation: scaleIn 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 22px 26px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-header h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-1);
+        }
+
+        #closeForgotModal {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 7px;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        #closeForgotModal:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-1);
+        }
+
+        #modalMessageContainer {
+            padding: 0 26px;
+        }
+
+        .modal-success-msg {
+            background: rgba(0, 229, 160, 0.07);
+            border: 1px solid rgba(0, 229, 160, 0.2);
+            color: var(--success);
+            font-size: 12.5px;
+            padding: 10px 14px;
+            border-radius: var(--rs);
+            margin-top: 14px;
+        }
+
+        .modal-error-msg {
+            background: rgba(255, 95, 109, 0.07);
+            border: 1px solid rgba(255, 95, 109, 0.2);
+            color: var(--error);
+            font-size: 12.5px;
+            padding: 10px 14px;
+            border-radius: var(--rs);
+            margin-top: 14px;
+        }
+
+        #emailStep,
+        #otpStep {
+            padding: 22px 26px;
+        }
+
+        .modal-body-text {
+            font-size: 13px;
+            color: var(--text-2);
+            margin-bottom: 20px;
+            line-height: 1.65;
+        }
+
+        .resend-row {
+            margin-top: 14px;
+            text-align: center;
+        }
+
+        #resendOTP {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--cyan);
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            transition: opacity 0.2s;
+        }
+
+        #resendOTP:hover {
+            opacity: 0.75;
+            text-decoration: underline;
+        }
+
+        #resendOTP:disabled {
+            color: var(--text-3);
+            cursor: default;
+            text-decoration: none;
+            opacity: 1;
+        }
+
+        @media (max-width: 500px) {
+            .form-body {
+                padding: 24px 20px 20px;
+            }
+
+            #emailStep,
+            #otpStep {
+                padding: 18px 20px;
+            }
+
+            .modal-header {
+                padding: 18px 20px;
+            }
+
+            #modalMessageContainer {
+                padding: 0 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-layer">
+        <div class="bg-grid"></div>
+        <div class="bg-r bg-r1"></div>
+        <div class="bg-r bg-r2"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="page">
+        <div class="auth-card">
+
+            <!-- Tab Indicator -->
+            <div class="tabs">
+                <button id="loginTab" class="tab-btn active" onclick="switchTab('login')">Login</button>
+                <button id="registerTab" class="tab-btn" onclick="switchTab('register')">Register</button>
+                <div id="tabIndicator"></div>
+            </div>
+
+            <div class="form-body">
+
+                <!-- ── Login Form ── -->
+                <div id="loginForm">
+                    <div class="form-heading">
+                        <h2>Welcome back</h2>
+                        <p>Sign in to your account</p>
+                    </div>
+
+                    <!-- Google Login -->
+                    <button class="social-btn" id="google-signin">
+                        <svg width="18" height="18" viewBox="0 0 18 18">
+                            <path
+                                d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"
+                                fill="#4285F4" />
+                            <path
+                                d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"
+                                fill="#34A853" />
+                            <path
+                                d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.826.957 4.039l3.007-2.332z"
+                                fill="#FBBC05" />
+                            <path
+                                d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"
+                                fill="#EA4335" />
+                        </svg>
+                        Continue with Google
+                    </button>
+
+                    <div class="divider">or</div>
+
+                    <form class="space-y-4" id="loginFormElement">
+                        <div class="input-group">
+                            <label for="loginEmail" class="input-label">Email address</label>
+                            <div class="input-container">
+                                <input readonly onfocus="this.removeAttribute('readonly')" type="email" id="loginEmail"
+                                    name="loginEmail" class="form-input logReq" placeholder="you@example.com">
+                                <div id="loginEmailError" class="error-message">Please enter a valid email address</div>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="loginPassword" class="input-label">Password</label>
+                            <div class="input-container">
+                                <input readonly onfocus="this.removeAttribute('readonly')" type="password"
+                                    id="loginPassword" name="loginPassword" class="form-input logReq" minlength="6"
+                                    placeholder="Enter your password">
+                                <span class="toggle-password" style="cursor:pointer;"
+                                    onclick="togglePasswordVisibility('#loginPassword', '#toggleLoginPasswordIcon')">
+                                    <svg id="toggleLoginPasswordIcon" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                                        <circle cx="12" cy="12" r="3" />
+                                    </svg>
+                                </span>
+                                <div id="loginPasswordError" class="error-message">Password must be at least 6
+                                    characters</div>
+                            </div>
+                        </div>
+
+                        <div class="row-meta">
+                            <div class="check-row">
+                                <input id="rememberMe" type="checkbox" class="checkbox">
+                                <label for="rememberMe">Remember me</label>
+                            </div>
+                            <a href="Login.html#" id="forgotPasswordLink">Forgot password?</a>
+                        </div>
+
+                        <button type="button" class="btn-submit" onclick="signin('/signin')">
+                            Sign In
+                        </button>
+                    </form>
+
+                    <div class="toggle-form-row">
+                        Don't have an account?
+                        <button class="toggle-form" data-target="register">Sign up</button>
+                    </div>
+
+                    <a href="https://wa.me/9405893959" target="_blank" class="wa-link">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                            <path
+                                d="M12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.122 1.524 5.855L.057 23.882a.75.75 0 0 0 .945.945l6.027-1.467A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.727 9.727 0 0 1-4.97-1.362l-.356-.212-3.713.903.92-3.619-.231-.372A9.714 9.714 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z" />
+                        </svg>
+                        Having trouble logging in?
+                    </a>
+                </div>
+
+                <!-- ── Register Form ── -->
+                <div id="registerForm" class="hidden" style="display:none;">
+                    <div class="form-heading">
+                        <h2>Create account</h2>
+                        <p>Join us today</p>
+                    </div>
+
+                    <!-- Google Register -->
+                    <button id="google-signup" class="social-btn">
+                        <svg width="18" height="18" viewBox="0 0 18 18">
+                            <path
+                                d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"
+                                fill="#4285F4" />
+                            <path
+                                d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"
+                                fill="#34A853" />
+                            <path
+                                d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.55 0 9s.348 2.826.957 4.039l3.007-2.332z"
+                                fill="#FBBC05" />
+                            <path
+                                d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z"
+                                fill="#EA4335" />
+                        </svg>
+                        Continue with Google
+                    </button>
+
+                    <div class="divider">or</div>
+
+                    <form id="registerFormElement" method="POST" action="Login.html#" enctype="multipart/formdata">
+                        <div class="input-group">
+                            <label for="registerName" class="input-label">Full name</label>
+                            <div class="input-container">
+                                <input type="text" id="registerName" autocomplete="off" name="registerName"
+                                    class="form-input regReq" minlength="3" placeholder="Your full name">
+                                <div id="registerNameError" class="error-message">Name must be at least 3 characters
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="registerEmail" class="input-label">Email address</label>
+                            <div class="input-container">
+                                <input type="email" id="registerEmail" autocomplete="off" name="registerEmail"
+                                    class="form-input regReq" placeholder="you@example.com">
+                                <div id="registerEmailError" class="error-message">Please enter a valid email address
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="registerPassword" class="input-label">Password</label>
+                            <div class="input-container">
+                                <input type="password" id="registerPassword" autocomplete="off" name="registerPassword"
+                                    class="form-input regReq" minlength="6" placeholder="Min. 6 characters">
+                                <span class="toggle-password"
+                                    onclick="togglePasswordVisibility('#registerPassword', '#toggleRegisterPasswordIcon')">
+                                    <svg id="toggleRegisterPasswordIcon" width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                                        <circle cx="12" cy="12" r="3" />
+                                    </svg>
+                                </span>
+                                <div id="registerPasswordError" class="error-message">Password must be at least 6
+                                    characters</div>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="registerConfirmPassword" class="input-label">Confirm password</label>
+                            <div class="input-container">
+                                <input type="password" id="registerConfirmPassword" autocomplete="off"
+                                    name="registerConfirmPassword" class="form-input regReq"
+                                    placeholder="Re-enter your password">
+                                <span class="toggle-password"
+                                    onclick="togglePasswordVisibility('#registerConfirmPassword', '#toggleRegisterConfirmPasswordIcon')">
+                                    <svg id="toggleRegisterConfirmPasswordIcon" width="16" height="16"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                                        <circle cx="12" cy="12" r="3" />
+                                    </svg>
+                                </span>
+                                <div id="registerConfirmPasswordError" class="error-message">Passwords do not match
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="terms-row">
+                            <input id="acceptTerms" name="acceptTerms" type="checkbox" class="checkbox" required>
+                            <label for="acceptTerms">
+                                I agree to the <a href="terms-and-conditions.html">Terms</a> and <a
+                                    href="privacy-policy.html">Privacy Policy</a>
+                            </label>
+                            <div id="acceptTermsError" class="error-message">You must accept the terms</div>
+                        </div>
+
+                        <button type="button" class="btn-submit" onclick="signup('/signup')">
+                            Sign Up
+                        </button>
+                    </form>
+
+                    <div class="toggle-form-row">
+                        Already have an account?
+                        <button class="toggle-form" data-target="login">Sign in</button>
+                    </div>
+
+                    <a href="https://wa.me/9405893959" target="_blank" class="wa-link">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                            <path
+                                d="M12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.122 1.524 5.855L.057 23.882a.75.75 0 0 0 .945.945l6.027-1.467A11.945 11.945 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.727 9.727 0 0 1-4.97-1.362l-.356-.212-3.713.903.92-3.619-.231-.372A9.714 9.714 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z" />
+                        </svg>
+                        Having trouble logging in?
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Payment Popup ── -->
+    <div id="paymentPopup" class="hidden"
+        style="display:none; position:fixed; inset:0; z-index:50; align-items:center; justify-content:center; background:rgba(0,0,0,0.78); backdrop-filter:blur(10px);">
+        <div class="payment-modal">
+            <div class="payment-icon-wrap">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+            </div>
+            <button class="popup-x" onclick="closePopup()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+            <h2>Payment Required</h2>
+            <p>To complete your registration, payment is required.</p>
+            <div class="payment-actions">
+                <button onclick="closePopup()" class="btn-cancel-pay">Cancel</button>
+                <a href="index.html#pricing" class="btn-pay-now">Pay Now</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Forgot Password Modal ── -->
+    <div id="forgotPasswordModal"
+        style="position:fixed; inset:0; background:rgba(0,0,0,0.74); backdrop-filter:blur(10px); display:none; align-items:center; justify-content:center; z-index:50; padding:16px;">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Reset Password</h3>
+                <button id="closeForgotModal">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+
+            <div id="modalMessageContainer" style="padding:0 26px; display:none;"></div>
+
+            <!-- Step 1: Email -->
+            <div id="emailStep" style="padding:22px 26px;">
+                <p class="modal-body-text">Enter your email address and we'll send you an OTP to reset your password.
+                </p>
+                <form id="forgotPasswordForm">
+                    <div class="input-group">
+                        <label for="resetEmail" class="input-label">Email address</label>
+                        <div class="input-container">
+                            <input type="email" id="resetEmail" name="resetEmail" class="form-input" required
+                                placeholder="you@example.com">
+                            <div id="resetEmailError" class="error-message">Please enter a valid email address</div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit">Send OTP</button>
+                </form>
+            </div>
+
+            <!-- Step 2: OTP + new password -->
+            <div id="otpStep" style="padding:22px 26px; display:none;">
+                <form id="resetPasswordForm">
+                    <input type="hidden" id="resetEmailHidden" name="email">
+                    <div class="input-group">
+                        <label for="resetOTP" class="input-label">OTP Code</label>
+                        <div class="input-container">
+                            <input type="text" id="resetOTP" name="otp" class="form-input" maxlength="6"
+                                pattern="[0-9]{6}" required placeholder="6-digit code">
+                            <div id="resetOTPError" class="error-message">Please enter the 6-digit OTP</div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="newPassword" class="input-label">New Password</label>
+                        <div class="input-container">
+                            <input type="password" id="newPassword" name="new_password" class="form-input" minlength="6"
+                                required placeholder="Min. 6 characters">
+                            <span class="toggle-password"
+                                onclick="togglePasswordVisibility('#newPassword', '#toggleNewPasswordIcon')">
+                                <svg id="toggleNewPasswordIcon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            </span>
+                            <div id="newPasswordError" class="error-message">Password must be at least 6 characters
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group" style="margin-bottom:22px;">
+                        <label for="confirmNewPassword" class="input-label">Confirm New Password</label>
+                        <div class="input-container">
+                            <input type="password" id="confirmNewPassword" name="confirm_password" class="form-input"
+                                minlength="6" required placeholder="Re-enter new password">
+                            <span class="toggle-password"
+                                onclick="togglePasswordVisibility('#confirmNewPassword', '#toggleConfirmNewPasswordIcon')">
+                                <svg id="toggleConfirmNewPasswordIcon" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            </span>
+                            <div id="confirmNewPasswordError" class="error-message">Passwords do not match</div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit">Reset Password</button>
+                </form>
+                <div class="resend-row">
+                    <button id="resendOTP">Resend OTP</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const base_url = '/';
+    </script>
+
+    <script src="assets/jquery/jquery.min.js"></script>
+    <script src="assets/login/main.js?random=658975883"></script>
+
+    <script>
+        // ── Tab switching ──
+        function switchTab(target) {
+            const isLogin = target === 'login';
+            document.getElementById('loginForm').style.display = isLogin ? '' : 'none';
+            document.getElementById('registerForm').style.display = isLogin ? 'none' : '';
+            document.getElementById('loginTab').classList.toggle('active', isLogin);
+            document.getElementById('registerTab').classList.toggle('active', !isLogin);
+            document.getElementById('tabIndicator').style.transform = isLogin ? '' : 'translateX(100%)';
+        }
+
+        // .toggle-form buttons (keep original data-target pattern)
+        document.querySelectorAll('.toggle-form').forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.dataset.target));
+        });
+
+        // ── Password visibility toggle ──
+        function togglePasswordVisibility(inputSelector, iconSelector) {
+            const input = document.querySelector(inputSelector);
+            const icon = document.querySelector(iconSelector);
+            const show = input.type === 'password';
+            input.type = show ? 'text' : 'password';
+            icon.innerHTML = show
+                ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+                : '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/>';
+        }
+
+        // ── Payment popup ──
+        function closePopup() {
+            const el = document.getElementById('paymentPopup');
+            el.style.display = 'none';
+        }
+
+        // ── Forgot Password Modal (jQuery — keeping original logic) ──
+        $(document).ready(function () {
+
+            $('#forgotPasswordLink').click(function (e) {
+                e.preventDefault();
+                $('#forgotPasswordModal').css('display', 'flex');
+                resetModal();
+            });
+
+            $('#closeForgotModal').click(function () {
+                $('#forgotPasswordModal').css('display', 'none');
+            });
+
+            $('#forgotPasswordModal').click(function (e) {
+                if (e.target === this) $(this).css('display', 'none');
+            });
+
+            // Step 1: Send OTP
+            $('#forgotPasswordForm').submit(function (e) {
+                e.preventDefault();
+                const email = $('#resetEmail').val().trim();
+                if (!validateEmail(email)) {
+                    showError('#resetEmailError', 'Please enter a valid email address');
+                    return;
+                }
+                const submitBtn = $(this).find('button[type="submit"]');
+                const originalText = submitBtn.text();
+                submitBtn.prop('disabled', true).text('Sending...');
+
+                $.ajax({
+                    url: base_url + 'forgot-password',
+                    type: 'POST',
+                    data: { email: email },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            $('#emailStep').hide();
+                            $('#otpStep').show();
+                            $('#resetEmailHidden').val(email);
+                            showModalSuccess('OTP sent successfully! Please check your email.');
+                            startResendTimer();
+                        } else {
+                            showError('#resetEmailError', response.message || 'Failed to send OTP');
+                        }
+                    },
+                    error: function (xhr) {
+                        let msg = 'An error occurred. Please try again.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                        showError('#resetEmailError', msg);
+                    },
+                    complete: function () {
+                        submitBtn.prop('disabled', false).text(originalText);
+                    }
+                });
+            });
+
+            // Step 2: Reset Password
+            $('#resetPasswordForm').submit(function (e) {
+                e.preventDefault();
+                const email = $('#resetEmailHidden').val();
+                const otp = $('#resetOTP').val().trim();
+                const newPass = $('#newPassword').val();
+                const confirmPass = $('#confirmNewPassword').val();
+
+                if (!otp || otp.length !== 6) { showError('#resetOTPError', 'Please enter a valid 6-digit OTP'); return; }
+                if (newPass.length < 6) { showError('#newPasswordError', 'Password must be at least 6 characters'); return; }
+                if (newPass !== confirmPass) { showError('#confirmNewPasswordError', 'Passwords do not match'); return; }
+
+                const submitBtn = $(this).find('button[type="submit"]');
+                const originalText = submitBtn.text();
+                submitBtn.prop('disabled', true).text('Resetting...');
+
+                $.ajax({
+                    url: base_url + 'verify-otp-reset-password',
+                    type: 'POST',
+                    data: { email: email, otp: otp, new_password: newPass, confirm_password: confirmPass },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            showModalSuccess('Password reset successfully! You can now login with your new password.');
+                            setTimeout(function () {
+                                $('#forgotPasswordModal').css('display', 'none');
+                                resetModal();
+                            }, 2000);
+                        } else {
+                            showError('#resetOTPError', response.message || 'Failed to reset password');
+                        }
+                    },
+                    error: function (xhr) {
+                        let msg = 'An error occurred. Please try again.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                        showError('#resetOTPError', msg);
+                    },
+                    complete: function () {
+                        submitBtn.prop('disabled', false).text(originalText);
+                    }
+                });
+            });
+
+            // Resend OTP
+            let resendTimer = null, resendCountdown = 0;
+
+            function startResendTimer() {
+                resendCountdown = 30;
+                const btn = $('#resendOTP');
+                btn.prop('disabled', true);
+                resendTimer = setInterval(function () {
+                    btn.text('Resend OTP (' + resendCountdown + 's)');
+                    resendCountdown--;
+                    if (resendCountdown < 0) {
+                        clearInterval(resendTimer);
+                        btn.prop('disabled', false).text('Resend OTP');
+                    }
+                }, 1000);
+            }
+
+            $('#resendOTP').click(function (e) {
+                e.preventDefault();
+                const email = $('#resetEmailHidden').val();
+                $(this).prop('disabled', true).text('Sending...');
+                $.ajax({
+                    url: base_url + 'forgot-password',
+                    type: 'POST',
+                    data: { email: email },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            showModalSuccess('OTP resent successfully!');
+                            startResendTimer();
+                        } else {
+                            showError('#resetOTPError', response.message || 'Failed to resend OTP');
+                            $('#resendOTP').prop('disabled', false).text('Resend OTP');
+                        }
+                    },
+                    error: function (xhr) {
+                        let msg = 'Failed to resend OTP. Please try again.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                        showError('#resetOTPError', msg);
+                        $('#resendOTP').prop('disabled', false).text('Resend OTP');
+                    }
+                });
+            });
+
+            // ── Helpers ──
+            function resetModal() {
+                $('#emailStep').show();
+                $('#otpStep').hide();
+                $('#forgotPasswordForm')[0].reset();
+                $('#resetPasswordForm')[0].reset();
+                $('.error-message').hide();
+                $('#modalMessageContainer').hide().empty();
+                if (resendTimer) { clearInterval(resendTimer); resendTimer = null; }
+                $('#resendOTP').prop('disabled', false).text('Resend OTP');
+            }
+
+            function validateEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+
+            function showModalSuccess(message) {
+                const c = $('#modalMessageContainer');
+                c.show().html('<div class="modal-success-msg">' + message + '</div>');
+                setTimeout(() => c.fadeOut(() => { c.hide().empty(); }), 4000);
+            }
+
+            function showError(selector, message) {
+                $(selector).text(message).show();
+                const c = $('#modalMessageContainer');
+                c.show().html('<div class="modal-error-msg">' + message + '</div>');
+                setTimeout(() => c.fadeOut(() => { c.hide().empty(); }), 4000);
+            }
+        });
+
+        // ── Google auth ──
+        document.getElementById('google-signup').addEventListener('click', function () {
+            window.location.href = "https://tradediary.in/googleLogin";
+        });
+        document.getElementById('google-signin').addEventListener('click', function () {
+            window.location.href = "https://tradediary.in/googleLogin";
+        });
+
+
+        (function () {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                if (cookies[i].trim().startsWith('osrgdthfudtrshf=')) {
+                    switchTab('register');
+                    break;
+                }
+            }
+        })();
+    </script>
+
+</body>
+
+</html>
