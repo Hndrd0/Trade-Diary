@@ -1,4 +1,4 @@
-/* landing.js – Trade Diary landing page (Redesign 2025) */
+/* landing.js – Green Journal landing page (Redesign 2025) */
 
 // ── DARK MODE TOGGLE ──────────────────────────────────────────────────────────
 // The redesign is always-dark, but we keep the toggle wired for the checkbox
@@ -199,7 +199,7 @@ function startPayment(order_id, amount, period, email = null) {
     key: "rzp_live_T596ejLr7FUmu1",
     amount: amount,
     currency: "INR",
-    name: "Trade Diary",
+    name: "Green Journal",
     description: "Subscription",
     image: base_url + "assets/images/logo-with-bg.png",
     prefill: {
