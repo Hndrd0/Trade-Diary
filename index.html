@@ -62,7 +62,7 @@
     <link rel="preconnect" href="https://www.googletagmanager.com">
     <link rel="dns-prefetch" href="https://connect.facebook.net/">
     <link rel="dns-prefetch" href="https://checkout.razorpay.com/">
-    <link rel="preload" as="image" href="assets/images/green-journal-purple-v2.png">
+    <link rel="preload" as="image" href="assets/images/green_journal_logo_simple.jpg">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
@@ -105,10 +105,10 @@
         <nav id="td-nav">
             <div class="nav-inner">
                 <a class="nav-logo" href="index.html">
-                    <img src="assets/images/green-journal-purple-v2.png" alt="Green Journal Logo" class="force-light-logo"
+                    <img src="assets/images/green_journal_logo_simple.jpg" alt="Green Journal Logo" class="force-light-logo"
                         style="width: 40px; height: 40px; max-width: 40px;" />
 
-                    <img src="assets/images/green-journal-purple-v2.png" alt="Green Journal Logo" class="force-dark-logo"
+                    <img src="assets/images/green_journal_logo_simple.jpg" alt="Green Journal Logo" class="force-dark-logo"
                         style="width: 40px; height: 40px; max-width: 40px;" />
 
                     <span class="hide-on-mobile">
@@ -728,6 +728,26 @@
         <div class="pricing-grid"
             style="">
 
+                            <!-- Free Plan -->
+                <div class="price-card">
+                    <div class="plan-name">Free Plan</div>
+                    <div class="plan-desc">For beginners starting out</div>
+                    <div class="plan-price">
+                        <span>₹0</span><small> forever</small>
+                    </div>
+                        <div style="height:28px;"></div>
+                    <ul class="plan-features">
+                        <li>Up to 10 trades per month</li>
+                        <li>Basic analytics</li>
+                        <li>Trade screenshots</li>
+                        <li>Community access</li>
+                    </ul>
+                    <button class="btn-plan btn-plan-outline"
+                        onclick="window.location.href='Login.html'">
+                        Get Started Free
+                    </button>
+                </div>
+
                             <!-- Monthly -->
                 <div class="price-card">
                     <div class="plan-name">Monthly Plan</div>
@@ -744,7 +764,7 @@
                         <li>Standard support</li>
                     </ul>
                     <button class="btn-plan btn-plan-outline"
-                        onclick="makePayment('/createOrder','monthly', this)">
+                        onclick="window.location.href='https://rzp.io/rzp/greenjournalmonthly'">
                         Choose Monthly
                     </button>
                 </div>
@@ -770,7 +790,7 @@
                         <li>Beta Tester Access</li>
                     </ul>
                     <button class="btn-plan btn-plan-gold"
-                        onclick="makePayment('/createOrder','annual', this)">
+                        onclick="window.location.href='https://rzp.io/rzp/greenjournalyearly'">
                         Save 72% Annually
                     </button>
                 </div>
