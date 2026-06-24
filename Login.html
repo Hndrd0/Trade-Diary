@@ -1200,6 +1200,26 @@
     </script>
 
     <script src="assets/jquery/jquery.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-K9IG5LuHK9oQGyi1jlpiYby989Zywio",
+            authDomain: "greenjournal.firebaseapp.com",
+            projectId: "greenjournal",
+            storageBucket: "greenjournal.firebasestorage.app",
+            messagingSenderId: "256519277997",
+            appId: "1:256519277997:web:e9b4a2336b0fcf18b92524"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        window.firebaseAuth = auth;
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+    </script>
     <script src="assets/login/main.js?random=658975883"></script>
 
     <script>
