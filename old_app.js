@@ -1,5 +1,5 @@
 // ============================================================
-//  Trade Diary — app.js
+//  Green Journal — app.js
 //  Fully functional trading journal SPA.
 //  All data persisted in localStorage under key 'tradeDiary_trades'.
 // ============================================================
