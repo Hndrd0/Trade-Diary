@@ -201,7 +201,7 @@ function startPayment(order_id, amount, period, email = null) {
     currency: "INR",
     name: "Green Journal",
     description: "Subscription",
-    image: base_url + "assets/images/logo-with-bg.png",
+    image: base_url + "assets/images/green_journal_logo_simple.jpg",
     prefill: {
       email: email,
     },
